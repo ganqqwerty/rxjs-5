@@ -241,4 +241,27 @@ export class TestScheduler extends VirtualTimeScheduler {
     }
     return testMessages;
   }
+
+  // v4-backwards-compatibility
+  createObserver() {
+    const scheduler = this;
+    return {
+      messages: [] as TestMessage[],
+      next(v: any) {
+        this.messages.push({ frame: scheduler.now(), notification: Notification.createNext(v) });
+      },
+      error(err: any) {
+        this.messages.push({ frame: scheduler.now(), notification: Notification.createError(err) });
+      },
+      complete() {
+        this.messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
+      }
+    };
+  }
+
+  // v4-backwards-compatibility
+  start: this['flush'];
 }
+
+// v4-backwards-compatibility
+TestScheduler.prototype.start = TestScheduler.prototype.flush;
