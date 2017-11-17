@@ -141,6 +141,8 @@ import './add/operator/windowWhen';
 import './add/operator/withLatestFrom';
 import './add/operator/zip';
 import './add/operator/zipAll';
+// v4-backwards-compatibility
+import './add/operator/backwards-compatibility';
 
 /* tslint:disable:no-unused-variable */
 export {Operator} from './Operator';

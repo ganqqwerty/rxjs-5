@@ -7,12 +7,16 @@ import { UnsubscriptionError } from './util/UnsubscriptionError';
 
 export interface AnonymousSubscription {
   unsubscribe(): void;
+  // v4-backwards-compatibility
+  dispose(): void;
 }
 
 export type TeardownLogic = AnonymousSubscription | Function | void;
 
 export interface ISubscription extends AnonymousSubscription {
   unsubscribe(): void;
+  // v4-backwards-compatibility
+  dispose(): void;
   readonly closed: boolean;
 }
 
@@ -215,7 +219,13 @@ export class Subscription implements ISubscription {
       _parents.push(parent);
     }
   }
+
+   // v4-backwards-compatibility
+   dispose: () => void;
 }
+
+// v4-backwards-compatibility
+Subscription.prototype.dispose = Subscription.prototype.unsubscribe;
 
 function flattenUnsubscriptionErrors(errors: any[]) {
  return errors.reduce((errs, err) => errs.concat((err instanceof UnsubscriptionError) ? err.errors : err), []);
