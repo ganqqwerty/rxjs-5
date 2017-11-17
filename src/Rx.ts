@@ -205,7 +205,11 @@ let Scheduler = {
   asap,
   queue,
   animationFrame,
-  async
+  async,
+  // v4-backwards-compatibility
+  currentThread: queue,
+  immediate: {}, // TODO
+  default: async
 };
 
 /**
