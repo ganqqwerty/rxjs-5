@@ -129,11 +129,11 @@ export class Subject<T> extends Observable<T> implements ISubscription {
   }
 
    // v4-backwards-compatibility
-   dispose: () => void;
+   dispose() { return this.unsubscribe(); }
+   onNext(v: T) { return this.next(v); }
+   onError(err: any) { return this.error(err); }
+   onCompleted() { return this.complete(); }
 }
-
-// v4-backwards-compatibility
-Subject.prototype.dispose = Subject.prototype.unsubscribe;
 
 /**
  * @class AnonymousSubject<T>

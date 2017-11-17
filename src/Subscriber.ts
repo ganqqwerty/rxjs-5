@@ -149,7 +149,17 @@ export class Subscriber<T> extends Subscription implements Observer<T> {
     this._parents = _parents;
     return this;
   }
+
+  // v4-backwards-compatibility
+  onNext: this['next'];
+  onError: this['error'];
+  onCompleted: this['complete'];
 }
+
+// v4-backwards-compatibility
+Subscriber.prototype.onNext = Subscriber.prototype.next;
+Subscriber.prototype.onError = Subscriber.prototype.error;
+Subscriber.prototype.onCompleted = Subscriber.prototype.complete;
 
 /**
  * We need this JSDoc comment for affecting ESDoc.
