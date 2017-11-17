@@ -167,6 +167,8 @@ export {AjaxRequest, AjaxResponse, AjaxError, AjaxTimeoutError} from './observab
 export { pipe } from './util/pipe';
 // v4-backwards-compatibility
 export {Disposable} from './disposable/Disposable';
+// v4-backwards-compatibility
+export {ReactiveTest} from './testing/ReactiveTest';
 
 import { asap } from './scheduler/asap';
 import { async } from './scheduler/async';
