@@ -2,6 +2,7 @@
 
 import { Notification } from '../Notification';
 import { TestMessage } from './TestMessage';
+import { SubscriptionLog } from './SubscriptionLog';
 
 export const ReactiveTest = {
     /**
@@ -25,4 +26,7 @@ export const ReactiveTest = {
     onCompleted: function(ticks: number) {
         return { frame: ticks, notification: Notification.createComplete() };
     },
+    subscribe: function(start: number, end?: number) {
+        return new SubscriptionLog(start, end);
+    }
 };
