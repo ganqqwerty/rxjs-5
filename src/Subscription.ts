@@ -221,11 +221,10 @@ export class Subscription implements ISubscription {
   }
 
    // v4-backwards-compatibility
-   dispose: () => void;
+   dispose() {
+     this.unsubscribe();
+   }
 }
-
-// v4-backwards-compatibility
-Subscription.prototype.dispose = Subscription.prototype.unsubscribe;
 
 function flattenUnsubscriptionErrors(errors: any[]) {
  return errors.reduce((errs, err) => errs.concat((err instanceof UnsubscriptionError) ? err.errors : err), []);
