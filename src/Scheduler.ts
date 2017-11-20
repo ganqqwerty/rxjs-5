@@ -1,6 +1,8 @@
 import { Action } from './scheduler/Action';
 import { Subscription } from './Subscription';
 
+export type Rxjs4Action<TState> = (scheduler: IScheduler, state: TState) => IRxJs4Disposable;
+
 export interface IRxJs4Disposable {
   dispose(): void;
 }
@@ -63,6 +65,9 @@ export class Scheduler implements IScheduler {
    */
   public now: () => number;
 
+  // v4-backwards-compatibility
+  public schedule<TState>(state: TState, action: Rxjs4Action<TState>): IRxJs4Disposable;
+
   /**
    * Schedules a function, `work`, for execution. May happen at some point in
    * the future, according to the `delay` parameter, if specified. May be passed
@@ -80,12 +85,17 @@ export class Scheduler implements IScheduler {
    * @return {Subscription} A subscription in order to be able to unsubscribe
    * the scheduled work.
    */
-  public schedule<TState>(state: TState, action: (scheduler: IScheduler, state: TState) => IRxJs4Disposable): IRxJs4Disposable;
   public schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
-  public schedule<T>(work?: any, delay = 0 as any, state?: any, ...args: any[]): Subscription {
-    return new this.SchedulerAction<T>(this, work).schedule(state, delay);
+  public schedule<T>(workOrState?: any, delayOrAction = 0 as number | Rxjs4Action<T>, state?: any): Subscription {
+    if (typeof delayOrAction === 'number') {
+      return new this.SchedulerAction<T>(this, workOrState).schedule(state, delayOrAction);
+    } else {
+      // v4-backwards-compatibility
+      return new this.SchedulerAction<T>(this, delayOrAction as any).schedule(workOrState);
+    }
   }
 
+  // v4-backwards-compatibility
   scheduleFuture: any;
   scheduleRecursive: any;
   scheduleRecursiveFuture: any;
