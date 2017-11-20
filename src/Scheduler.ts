@@ -66,7 +66,7 @@ export class Scheduler implements IScheduler {
   public now: () => number;
 
   // v4-backwards-compatibility
-  public schedule<TState>(state: TState, action: Rxjs4Action<TState>): IRxJs4Disposable;
+  public schedule<TState>(state: TState, action: Rxjs4Action<TState>, delay?: number): IRxJs4Disposable;
 
   /**
    * Schedules a function, `work`, for execution. May happen at some point in
@@ -86,12 +86,22 @@ export class Scheduler implements IScheduler {
    * the scheduled work.
    */
   public schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
-  public schedule<T>(workOrState?: any, delayOrAction = 0 as number | Rxjs4Action<T>, state?: any): Subscription {
+  public schedule<T>(workOrState?: any, delayOrAction = 0 as number | Rxjs4Action<T>, stateOrDelay?: T | number): Subscription {
     if (typeof delayOrAction === 'number') {
-      return new this.SchedulerAction<T>(this, workOrState).schedule(state, delayOrAction);
+      const work = workOrState as (this: Action<T>, state?: T) => void;
+      const delay = delayOrAction;
+      const state = stateOrDelay as T;
+      return new this.SchedulerAction<T>(this, work).schedule(state, delay);
     } else {
       // v4-backwards-compatibility
-      return new this.SchedulerAction<T>(this, delayOrAction as any).schedule(workOrState);
+      const scheduler = this;
+      const action = delayOrAction;
+      const delay = stateOrDelay as number;
+      const state = workOrState;
+      const work = function(this: Action<T>, state?: T) {
+        action(scheduler, state);
+      };
+      return new this.SchedulerAction<T>(this, work).schedule(state, delay);
     }
   }
 
