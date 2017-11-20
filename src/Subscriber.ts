@@ -243,6 +243,8 @@ class SafeSubscriber<T> extends Subscriber<T> {
   }
 
   private _hostReportError(err: any) {
-    setTimeout(() => { throw err; });
+    // v4-backwards-compatibility
+    // throw => console.error (reduce unit test noise)
+    setTimeout(() => { console.log(`_hostReportError`, err); });
   }
 }
