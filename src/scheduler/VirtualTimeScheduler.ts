@@ -37,6 +37,12 @@ export class VirtualTimeScheduler extends AsyncScheduler {
       throw error;
     }
   }
+
+  // v4-backwards-compatibility
+  public scheduleAbsolute(state: any, dueTime: number, action: () => any) {
+    const time = Math.max(dueTime - this.now(), this.now()) + 1;
+    return this.schedule(action, time, state);
+  }
 }
 
 /**
