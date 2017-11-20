@@ -76,6 +76,9 @@ export type PartialRxJs4Observer<T> = RxJs4NextObserver<T> | RxJs4ErrorObserver<
 export type PartialObserver<T> = NextObserver<T> | ErrorObserver<T> | CompletionObserver<T> | PartialRxJs4Observer<T>;
 
 // v4-backwards-compatibility
+const defaultError = ((err: any) => { throw err; });
+
+// v4-backwards-compatibility
 // `interface` => `class`
 export class Observer<T> {
   closed?: boolean;
@@ -87,6 +90,23 @@ export class Observer<T> {
   onNext?: this['next'];
   onError?: this['error'];
   onCompleted?: this['complete'];
+
+  // v4-backwards-compatibility
+  static create<T>(
+    maybeNext?: Observer<T>['next'],
+    maybeError?: Observer<T>['error'],
+    maybeComplete?: Observer<T>['complete']
+  ): Observer<T> {
+    const next: any = maybeNext || Function.prototype;
+    const error: any = maybeError || defaultError;
+    const complete: any = maybeComplete || Function.prototype;
+    return {
+      next, error, complete,
+      onNext: next,
+      onError: error,
+      onCompleted: complete
+    };
+  }
 }
 
 export const empty: Observer<any> = {
