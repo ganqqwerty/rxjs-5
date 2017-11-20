@@ -33,6 +33,8 @@ import './add/observable/using';
 import './add/observable/throw';
 import './add/observable/timer';
 import './add/observable/zip';
+// v4-backwards-compatibility
+import './add/observable/backwards-compatibility-static';
 
 //dom
 import './add/observable/dom/ajax';
