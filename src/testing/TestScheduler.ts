@@ -1,4 +1,5 @@
 import { Observable } from '../Observable';
+import { Observer } from '../Observer';
 import { Notification } from '../Notification';
 import { ColdObservable } from './ColdObservable';
 import { HotObservable } from './HotObservable';
@@ -278,18 +279,17 @@ export class TestScheduler extends VirtualTimeScheduler {
   // v4-backwards-compatibility
   createObserver() {
     const scheduler = this;
-    return {
-      messages: [] as TestMessage[],
-      next(v: any) {
-        this.messages.push({ frame: scheduler.now(), notification: Notification.createNext(v) });
-      },
-      error(err: any) {
-        this.messages.push({ frame: scheduler.now(), notification: Notification.createError(err) });
-      },
-      complete() {
-        this.messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
-      }
-    };
+    const messages = [] as TestMessage[];
+    const obs = Observer.create<any>(
+      (v: any) => {
+        messages.push({ frame: scheduler.now(), notification: Notification.createNext(v) });
+      }, (err: any) => {
+        messages.push({ frame: scheduler.now(), notification: Notification.createError(err) });
+      }, () => {
+        messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
+      }) as Observer<any> & { messages: TestMessage[] };
+    obs.messages = messages;
+    return obs;
   }
 
   // v4-backwards-compatibility
