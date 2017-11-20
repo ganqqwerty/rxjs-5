@@ -40,8 +40,12 @@ export class VirtualTimeScheduler extends AsyncScheduler {
 
   // v4-backwards-compatibility
   public scheduleAbsolute(state: any, dueTime: number, action: () => any) {
-    const time = Math.max(dueTime - this.now(), this.now()) + 1;
-    return this.schedule(action, time, state);
+    return this.schedule(action, dueTime, state);
+  }
+
+  // v4-backwards-compatibility
+  get clock() {
+    return this.now();
   }
 }
 
