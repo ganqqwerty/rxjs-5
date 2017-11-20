@@ -1,5 +1,8 @@
 // v4-backwards-compatibility
 
+import { Notification } from '../Notification';
+import { TestMessage } from './TestMessage';
+
 export const ReactiveTest = {
     /**
      * Default virtual time used for creation of observable sequences in unit tests.
@@ -13,7 +16,13 @@ export const ReactiveTest = {
      * Default virtual time used to subscribe to observable sequences in unit tests.
      */
     subscribed: 200,
-    onNext: function() { /* no-op */ },
-    onError: function() { /* no-op */ },
-    onCompleted: function() { /* no-op */ },
+    onNext: function(ticks: number, value: any): TestMessage {
+        return { frame: ticks, notification: Notification.createNext(value) };
+    },
+    onError: function(ticks: number, err: any) {
+        return { frame: ticks, notification: Notification.createError(err) };
+    },
+    onCompleted: function(ticks: number) {
+        return { frame: ticks, notification: Notification.createComplete() };
+    },
 };
