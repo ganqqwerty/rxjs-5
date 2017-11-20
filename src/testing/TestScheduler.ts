@@ -7,6 +7,9 @@ import { SubscriptionLog } from './SubscriptionLog';
 import { Subscription } from '../Subscription';
 import { VirtualTimeScheduler, VirtualAction } from '../scheduler/VirtualTimeScheduler';
 
+// v4-backwards-compatibility
+import {ReactiveTest} from './ReactiveTest';
+
 const defaultMaxFrame: number = 750;
 
 interface FlushableTest {
@@ -287,6 +290,36 @@ export class TestScheduler extends VirtualTimeScheduler {
         this.messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
       }
     };
+  }
+
+  // v4-backwards-compatibility
+  startScheduler(
+    factory: () => Observable<any>,
+    settings: { created: number, subscribed: number, disposed: number } = {} as any
+  ): { messages: TestMessage[] } {
+    const created = settings.created == null ? ReactiveTest.created : settings.created;
+    const subscribed = settings.subscribed == null ? ReactiveTest.subscribed : settings.subscribed;
+    const disposed = settings.disposed == null ? ReactiveTest.disposed : settings.disposed;
+
+    const testObserver = this.createObserver();
+    let subscription: any;
+    let source: any;
+
+    this.scheduleAbsolute(null, created, function() {
+      source = factory();
+    });
+
+    this.scheduleAbsolute(null, subscribed, function() {
+      subscription = source.subscribe(testObserver);
+    });
+
+    this.scheduleAbsolute(null, disposed, function() {
+      subscription.dispose();
+    });
+
+    this.start();
+
+    return testObserver;
   }
 
   // v4-backwards-compatibility
