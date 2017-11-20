@@ -39,7 +39,9 @@ import { OperatorFunction } from '../interfaces';
 export function map<T, R>(project: (value: T, index: number) => R, thisArg?: any): OperatorFunction<T, R> {
   return function mapOperation(source: Observable<T>): Observable<R> {
     if (typeof project !== 'function') {
-      throw new TypeError('argument is not a function. Are you looking for `mapTo()`?');
+      // v4-backwards-compatibility
+      // throw new TypeError('argument is not a function. Are you looking for `mapTo()`?');
+      return source.lift(new MapOperator(() => project, thisArg));
     }
     return source.lift(new MapOperator(project, thisArg));
   };
