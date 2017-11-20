@@ -11,7 +11,9 @@ import { VirtualTimeScheduler, VirtualAction } from '../scheduler/VirtualTimeSch
 // v4-backwards-compatibility
 import {ReactiveTest} from './ReactiveTest';
 
-const defaultMaxFrame: number = 750;
+// v4-backwards-compatibility
+// 750 => 5000
+const defaultMaxFrame: number = 5000;
 
 interface FlushableTest {
   ready: boolean;
@@ -320,6 +322,12 @@ export class TestScheduler extends VirtualTimeScheduler {
     this.start();
 
     return testObserver;
+  }
+
+   // v4-backwards-compatibility
+  public scheduleAbsolute(state: any, dueTime: number, action: () => any) {
+    const processedTime = dueTime < this.clock ? this.clock + 1 : dueTime;
+    return super.scheduleAbsolute(state, processedTime, action);
   }
 
   // v4-backwards-compatibility
