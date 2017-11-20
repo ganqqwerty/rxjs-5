@@ -35,24 +35,54 @@ export class TestScheduler extends VirtualTimeScheduler {
     return indexOf * TestScheduler.frameTimeFactor;
   }
 
-  createColdObservable<T>(marbles: string, values?: any, error?: any): ColdObservable<T> {
-    if (marbles.indexOf('^') !== -1) {
-      throw new Error('cold observable cannot have subscription offset "^"');
+  // v4-backwards-compatibility
+  createColdObservable<T>(...messages: TestMessage[]): ColdObservable<T>;
+
+  createColdObservable<T>(marbles: string, values?: any, error?: any): ColdObservable<T>;
+  createColdObservable<T>(...args: any[]): ColdObservable<T> {
+    if (args.length === 0) {
+      // v4-backwards-compatibility
+      return this.createColdObservable('');
     }
-    if (marbles.indexOf('!') !== -1) {
-      throw new Error('cold observable cannot have unsubscription marker "!"');
+    let messages: TestMessage[];
+    if (typeof args[0] === 'string') {
+      const [marbles, values, error] = args;
+      if (marbles.indexOf('^') !== -1) {
+        throw new Error('cold observable cannot have subscription offset "^"');
+      }
+      if (marbles.indexOf('!') !== -1) {
+        throw new Error('cold observable cannot have unsubscription marker "!"');
+      }
+      messages = TestScheduler.parseMarbles(marbles, values, error);
+    } else {
+      // v4-backwards-compatibility
+      messages = args;
     }
-    const messages = TestScheduler.parseMarbles(marbles, values, error);
     const cold = new ColdObservable<T>(messages, this);
     this.coldObservables.push(cold);
     return cold;
   }
 
-  createHotObservable<T>(marbles: string, values?: any, error?: any): HotObservable<T> {
-    if (marbles.indexOf('!') !== -1) {
-      throw new Error('hot observable cannot have unsubscription marker "!"');
+  // v4-backwards-compatibility
+  createHotObservable<T>(...messages: TestMessage[]): HotObservable<any>;
+
+  createHotObservable<T>(marbles: string, values?: any, error?: any): HotObservable<T>;
+  createHotObservable<T>(...args: any[]): HotObservable<T> {
+    if (args.length === 0) {
+      // v4-backwards-compatibility
+      return this.createHotObservable('');
     }
-    const messages = TestScheduler.parseMarbles(marbles, values, error);
+    let messages: TestMessage[];
+    if (typeof args[0] === 'string') {
+      const [marbles, values, error] = args;
+      if (marbles.indexOf('!') !== -1) {
+        throw new Error('hot observable cannot have unsubscription marker "!"');
+      }
+      messages = TestScheduler.parseMarbles(marbles, values, error);
+    } else {
+      // v4-backwards-compatibility
+      messages = args;
+    }
     const subject = new HotObservable<T>(messages, this);
     this.hotObservables.push(subject);
     return subject;
