@@ -6,6 +6,24 @@
     Rx.internals = {};
   }
 
+  var errorObj = {e: {}};
+  
+  function tryCatcherGen(tryCatchTarget) {
+    return function tryCatcher() {
+      try {
+        return tryCatchTarget.apply(this, arguments);
+      } catch (e) {
+        errorObj.e = e;
+        return errorObj;
+      }
+    };
+  }
+
+  Rx.internals.tryCatch = function tryCatch(fn) {
+    if (typeof fn !== 'function') { throw new TypeError('fn must be a function'); }
+    return tryCatcherGen(fn);
+  };
+
   Rx.internals.inherits = function (child, parent) {
     function __() { this.constructor = child; }
     __.prototype = parent.prototype;
