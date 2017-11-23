@@ -112,6 +112,14 @@ declare module '../../Observable' {
   }
 }
 
+import { map } from '../../operator/map';
+Observable.prototype.select = map;
+declare module '../../Observable' {
+  interface Observable<T> {
+    select: typeof map;
+  }
+}
+
 Observable.prototype.slice = function<T>(this: Observable<T>, start: number, end: number) {
   return this.skip(start).take(end - start);
 };
@@ -236,7 +244,6 @@ declare module '../../Observable' {
     selectManyObserver: any;
     selectManyWithMaxConcurrent: any;
     selectMapWithMaxConcurrent: any;
-    select: any; // map
     selectSwitchFirst: any;
     shareValue: any;
     singleInstance: any;
