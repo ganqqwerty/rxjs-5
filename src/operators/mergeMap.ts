@@ -73,12 +73,16 @@ export function mergeMap<T, I, R>(project: (value: T, index: number) => Observab
 export function mergeMap<T, I, R>(project: (value: T, index: number) => ObservableInput<I>,
                                   resultSelector?: ((outerValue: T, innerValue: I, outerIndex: number, innerIndex: number) => R) | number,
                                   concurrent: number = Number.POSITIVE_INFINITY): OperatorFunction<T, I|R> {
+  // v4-backwards-compatibility
+  const backwardsCompatibleProject = typeof project === 'function'
+    ? project
+    : () => project;
   return function mergeMapOperatorFunction(source: Observable<T>) {
     if (typeof resultSelector === 'number') {
       concurrent = <number>resultSelector;
       resultSelector = null;
     }
-    return source.lift(new MergeMapOperator(project, <any>resultSelector, concurrent));
+    return source.lift(new MergeMapOperator(backwardsCompatibleProject, <any>resultSelector, concurrent));
   };
 }
 
