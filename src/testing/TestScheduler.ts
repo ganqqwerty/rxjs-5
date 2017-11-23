@@ -98,11 +98,11 @@ export class TestScheduler extends VirtualTimeScheduler {
                                      outerFrame: number): TestMessage[] {
     const messages: TestMessage[] = [];
     observable.subscribe((value) => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createNext(value) });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createNext(value), get value() { return this.notification; } });
     }, (err) => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createError(err) });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createError(err), get value() { return this.notification; } });
     }, () => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createComplete() });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createComplete(), get value() { return this.notification; } });
     });
     return messages;
   }
@@ -122,11 +122,11 @@ export class TestScheduler extends VirtualTimeScheduler {
         if (x instanceof Observable) {
           value = this.materializeInnerObservable(value, this.frame);
         }
-        actual.push({ frame: this.frame, notification: Notification.createNext(value) });
+        actual.push({ frame: this.frame, notification: Notification.createNext(value), get value() { return this.notification; } });
       }, (err) => {
-        actual.push({ frame: this.frame, notification: Notification.createError(err) });
+        actual.push({ frame: this.frame, notification: Notification.createError(err), get value() { return this.notification; } });
       }, () => {
-        actual.push({ frame: this.frame, notification: Notification.createComplete() });
+        actual.push({ frame: this.frame, notification: Notification.createComplete(), get value() { return this.notification; } });
       });
     }, 0);
 
@@ -272,7 +272,7 @@ export class TestScheduler extends VirtualTimeScheduler {
       }
 
       if (notification) {
-        testMessages.push({ frame: groupStart > -1 ? groupStart : frame, notification });
+        testMessages.push({ frame: groupStart > -1 ? groupStart : frame, notification, get value() { return this.notification; } });
       }
     }
     return testMessages;
@@ -284,11 +284,11 @@ export class TestScheduler extends VirtualTimeScheduler {
     const messages = [] as TestMessage[];
     const obs = Observer.create<any>(
       (v: any) => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createNext(v) });
+        messages.push({ frame: scheduler.now(), notification: Notification.createNext(v), get value() { return this.notification; } });
       }, (err: any) => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createError(err) });
+        messages.push({ frame: scheduler.now(), notification: Notification.createError(err), get value() { return this.notification; } });
       }, () => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
+        messages.push({ frame: scheduler.now(), notification: Notification.createComplete(), get value() { return this.notification; } });
       }) as Observer<any> & { messages: TestMessage[] };
     obs.messages = messages;
     return obs;
