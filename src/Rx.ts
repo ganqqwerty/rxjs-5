@@ -168,7 +168,9 @@ export {VirtualTimeScheduler} from './scheduler/VirtualTimeScheduler';
 export {AjaxRequest, AjaxResponse, AjaxError, AjaxTimeoutError} from './observable/dom/AjaxObservable';
 export { pipe } from './util/pipe';
 // v4-backwards-compatibility
-export {Disposable, SerialDisposable} from './disposable/Disposable';
+export {
+  CompositeDisposable, Disposable, RefCountDisposable, SerialDisposable, SingleAssignmentDisposable
+} from './disposable/Disposable';
 // v4-backwards-compatibility
 export {ReactiveTest} from './testing/ReactiveTest';
 
