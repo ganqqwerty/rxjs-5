@@ -128,4 +128,14 @@ export class Notification<T> {
   static createComplete(): Notification<any> {
     return Notification.completeNotification;
   }
+
+  // v4-backwards-compatibility
+  static createOnNext: typeof Notification['createNext'];
+  static createOnError: typeof Notification['createError'];
+  static createOnCompleted: typeof Notification['createComplete'];
 }
+
+// v4-backwards-compatibility
+Notification.createOnNext = Notification.createNext;
+Notification.createOnError = Notification.createError;
+Notification.createOnCompleted = Notification.createComplete;
