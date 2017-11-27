@@ -1,3 +1,5 @@
+import {Notification} from './Notification';
+
 export interface NextObserver<T> {
   closed?: boolean;
   next: (value: T) => void;
@@ -106,6 +108,18 @@ export class Observer<T> {
       onError: error,
       onCompleted: complete
     };
+  }
+
+  // v4-backwards-compatibility
+  static fromNotifier(handler: (notification: any) => any, thisArg?: any): Observer<any> {
+    const cb = thisArg === void 0 ? handler : handler.bind(thisArg);
+    return Observer.create((n: any) => {
+      return cb(Notification.createNext(n));
+    }, (err: any) => {
+      return cb(Notification.createError(err));
+    }, () => {
+      return cb(Notification.createComplete());
+    });
   }
 }
 
