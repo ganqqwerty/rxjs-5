@@ -340,17 +340,20 @@ export class Observable<T> implements Subscribable<T> {
   }
 
   // v4-backwards-compatibility
-  subscribeOnNext(next: (value: T) => void) {
-    return this.subscribe(next);
+  subscribeOnNext(next: (value: T) => void, thisArg?: any) {
+    const cb = thisArg === void 0 ? next : next.bind(thisArg);
+    return this.subscribe(cb);
   }
 
   // v4-backwards-compatibility
-  subscribeOnError(error: (error: any) => void) {
-    return this.subscribe(undefined, error);
+  subscribeOnError(error: (error: any) => void, thisArg?: any) {
+    const cb = thisArg === void 0 ? error : error.bind(thisArg);
+    return this.subscribe(undefined, cb);
   }
 
   // v4-backwards-compatibility
-  subscribeOnCompleted(complete: () => void) {
-    return this.subscribe(undefined, undefined, complete);
+  subscribeOnCompleted(complete: () => void, thisArg?: any) {
+    const cb = thisArg === void 0 ? complete : complete.bind(thisArg);
+    return this.subscribe(undefined, undefined, cb);
   }
 }
