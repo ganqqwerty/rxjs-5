@@ -7,28 +7,12 @@ export interface IRxJs4Disposable {
   dispose(): void;
 }
 
-export interface IRxJs4Scheduler {
-  /** Gets the current time according to the local machine's system clock. */
-  now(): number;
-
-  schedule<TState>(state: TState, action: (scheduler: IScheduler, state: TState) => IRxJs4Disposable): IRxJs4Disposable;
-  scheduleFuture<TState>(state: TState, dueTime: number | Date, action: (scheduler: IScheduler, state: TState) => IRxJs4Disposable): IRxJs4Disposable;
-  scheduleRecursive<TState>(state: TState, action: (state: TState, action: (state: TState) => void) => void): IRxJs4Disposable;
-  scheduleRecursiveFuture<TState, TTime extends number | Date>(
-    state: TState,
-    dueTime: TTime,
-    action: (state: TState, action: (state: TState, dueTime: TTime) => void) => void
-  ): IRxJs4Disposable;
-  schedulePeriodic<TState>(state: TState, period: number, action: (state: TState) => TState): IRxJs4Disposable;
-  catch(handler: Function): IRxJs4Scheduler;
-}
-
 export interface IRxJs5Scheduler {
   now(): number;
   schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
 }
 
-export type IScheduler = IRxJs4Scheduler & IRxJs5Scheduler;
+export type IScheduler = IRxJs5Scheduler;
 
 /**
  * An execution context and a data structure to order tasks and schedule their
@@ -53,6 +37,7 @@ export class Scheduler implements IScheduler {
   constructor(private SchedulerAction: typeof Action,
               now: () => number = Scheduler.now) {
     this.now = now;
+    false && this.scheduleFuture; // tslint:disable-line
   }
 
   /**
@@ -106,9 +91,14 @@ export class Scheduler implements IScheduler {
   }
 
   // v4-backwards-compatibility
-  scheduleFuture: any;
-  scheduleRecursive: any;
-  scheduleRecursiveFuture: any;
-  schedulePeriodic: any;
-  catch: any;
+  private scheduleFuture<TState>(
+    state: TState,
+    dueTime: number | Date,
+    action: (scheduler: IScheduler, state: TState) => Subscription
+  ): Subscription {
+    const delay: number = Math.max(0, typeof dueTime === 'number' ? dueTime : dueTime.getTime() - this.now());
+    return this.schedule((state) => {
+      action(this, state);
+    }, delay, state);
+  }
 }
