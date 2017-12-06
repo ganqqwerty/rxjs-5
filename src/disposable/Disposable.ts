@@ -2,13 +2,7 @@
 
 import {ISubscription} from '../Subscription';
 
-export class Disposable implements ISubscription {
-
-    static create(fn: () => void): Disposable {
-        return new Disposable(fn);
-    }
-
-    static empty = new Disposable(() => { /* noop */ });
+export class DisposableImpl implements ISubscription {
 
     private _disposed = false;
 
@@ -33,9 +27,35 @@ export class Disposable implements ISubscription {
 
     dispose: this['unsubscribe'];
 };
+DisposableImpl.prototype.dispose = DisposableImpl.prototype.unsubscribe;
+
+export class Disposable implements ISubscription {
+
+    static create(fn: () => void): Disposable {
+        return new DisposableImpl(fn);
+    }
+
+    static empty = new DisposableImpl(() => { /* noop */ });
+
+    private constructor() {}
+
+    get closed() {
+        return true;
+    }
+
+    get isDisposed() {
+        return true;
+    }
+
+    unsubscribe(): void {
+        /* no op */
+    }
+
+    dispose: this['unsubscribe'];
+};
 Disposable.prototype.dispose = Disposable.prototype.unsubscribe;
 
-export class CompositeDisposable implements ISubscription {
+export class CompositeDisposable implements ISubscription, Disposable {
 
     public closed: boolean;
     private disposables: ISubscription[];
@@ -87,11 +107,15 @@ export class CompositeDisposable implements ISubscription {
         }
     }
 
+    get isDisposed() {
+        return this.closed;
+    }
+
     dispose: this['unsubscribe'];
 }
 CompositeDisposable.prototype.dispose = CompositeDisposable.prototype.unsubscribe;
 
-export class SerialDisposable implements ISubscription {
+export class SerialDisposable implements ISubscription, Disposable {
     public closed: boolean = false;
     private current: ISubscription;
 
@@ -134,7 +158,7 @@ export class SerialDisposable implements ISubscription {
 
 SerialDisposable.prototype.unsubscribe = SerialDisposable.prototype.dispose;
 
-export class SingleAssignmentDisposable implements ISubscription {
+export class SingleAssignmentDisposable implements ISubscription, Disposable {
     public closed: boolean = false;
     private disposable: ISubscription;
 
@@ -209,7 +233,7 @@ export class RefCountDisposable implements ISubscription {
             return Disposable.empty;
         }
         this.count++;
-        return new Disposable(() => {
+        return new DisposableImpl(() => {
             this.count--;
             this._disposeCheck();
         });
@@ -218,3 +242,5 @@ export class RefCountDisposable implements ISubscription {
     unsubscribe: this['dispose'];
 }
 RefCountDisposable.prototype.unsubscribe = RefCountDisposable.prototype.dispose;
+
+export type IDisposable = ISubscription;

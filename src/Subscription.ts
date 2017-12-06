@@ -18,6 +18,7 @@ export interface ISubscription extends AnonymousSubscription {
   // v4-backwards-compatibility
   dispose(): void;
   readonly closed: boolean;
+  readonly isDisposed: boolean;
 }
 
 /**
@@ -224,6 +225,11 @@ export class Subscription implements ISubscription {
    dispose() {
      this.unsubscribe();
    }
+
+   // v4-backwards-compatibility
+   get isDisposed() {
+     return this.closed;
+  }
 }
 
 function flattenUnsubscriptionErrors(errors: any[]) {

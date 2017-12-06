@@ -39,7 +39,7 @@ export class Subject<T> extends Observable<T> implements ISubscription {
     super();
   }
 
-  static create: Function = <T>(destination: Observer<T>, source: Observable<T>): AnonymousSubject<T> => {
+  static create: typeof Observable['create'] = <T>(destination: Observer<T>, source: Observable<T>): AnonymousSubject<T> => {
     return new AnonymousSubject<T>(destination, source);
   }
 
@@ -133,6 +133,9 @@ export class Subject<T> extends Observable<T> implements ISubscription {
    onNext(v: T) { return this.next(v); }
    onError(err: any) { return this.error(err); }
    onCompleted() { return this.complete(); }
+   get isDisposed() {
+     return this.isStopped;
+   }
 }
 
 /**
