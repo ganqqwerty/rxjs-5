@@ -148,7 +148,7 @@ import './add/operator/backwards-compatibility';
 
 /* tslint:disable:no-unused-variable */
 export {Operator} from './Operator';
-export {Observer} from './Observer';
+export {Observer, Observer as IObserver} from './Observer';
 export {Subscription} from './Subscription';
 export {Subscriber} from './Subscriber';
 export {AsyncSubject} from './AsyncSubject';
@@ -169,7 +169,7 @@ export {AjaxRequest, AjaxResponse, AjaxError, AjaxTimeoutError} from './observab
 export { pipe } from './util/pipe';
 // v4-backwards-compatibility
 export {
-  CompositeDisposable, Disposable, RefCountDisposable, SerialDisposable, SingleAssignmentDisposable
+  CompositeDisposable, Disposable, RefCountDisposable, SerialDisposable, SingleAssignmentDisposable, IDisposable
 } from './disposable/Disposable';
 // v4-backwards-compatibility
 export {ReactiveTest} from './testing/ReactiveTest';
@@ -177,6 +177,12 @@ export {ReactiveTest} from './testing/ReactiveTest';
 import { asap } from './scheduler/asap';
 import { async } from './scheduler/async';
 import { queue } from './scheduler/queue';
+
+// v4-backwards-compatibility
+import { IScheduler } from './Scheduler';
+export { IScheduler };
+import { immediate } from './scheduler/immediate';
+
 import { animationFrame } from './scheduler/animationFrame';
 import { AsapScheduler } from './scheduler/AsapScheduler';
 import { AsyncScheduler } from './scheduler/AsyncScheduler';
@@ -212,7 +218,7 @@ let Scheduler = {
   async,
   // v4-backwards-compatibility
   currentThread: queue,
-  immediate: {}, // TODO
+  immediate: immediate as IScheduler,
   default: async
 };
 

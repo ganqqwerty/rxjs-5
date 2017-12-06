@@ -80,18 +80,131 @@ export type PartialObserver<T> = NextObserver<T> | ErrorObserver<T> | Completion
 // v4-backwards-compatibility
 const defaultError = ((err: any) => { throw err; });
 
+enum CheckedObserverState {
+  IDLE, BUSY, DONE
+}
+
+class CheckedObserver<T> implements Observer<any> {
+  private state = CheckedObserverState.IDLE;
+
+  constructor(private obs: Observer<T>) {}
+
+  next(value: T): void {
+    this.checkAccess();
+    try {
+      this.obs.next(value);
+    } finally {
+      this.state = CheckedObserverState.IDLE;
+    }
+  }
+
+  error(err: any): void {
+    this.checkAccess();
+    try {
+      this.obs.error(err);
+    } finally {
+      this.state = CheckedObserverState.DONE;
+    }
+  }
+
+  complete(): void {
+    this.checkAccess();
+    try {
+      this.obs.complete();
+    } finally {
+      this.state = CheckedObserverState.DONE;
+    }
+  }
+
+  private checkAccess() {
+    if (this.state === CheckedObserverState.BUSY) { throw new Error('Re-entrancy detected'); }
+    if (this.state === CheckedObserverState.DONE) { throw new Error('Observer completed'); }
+    if (this.state === CheckedObserverState.IDLE) { this.state = CheckedObserverState.BUSY; }
+  }
+
+  onNext?: this['next'];
+  onError?: this['error'];
+  onCompleted?: this['complete'];
+}
+
 // v4-backwards-compatibility
-// `interface` => `class`
-export class Observer<T> {
+CheckedObserver.prototype.onNext = CheckedObserver.prototype.next;
+CheckedObserver.prototype.onError = CheckedObserver.prototype.error;
+CheckedObserver.prototype.onCompleted = CheckedObserver.prototype.complete;
+
+// v4-backwards-compatibility
+class ObserverImpl<T> implements Observer<T> {
+
   closed?: boolean;
-  next: (value: T) => void;
-  error: (err: any) => void;
-  complete: () => void;
+
+  constructor(
+    private n: Observer<T>['next'],
+    private e: Observer<T>['error'],
+    private c: Observer<T>['complete']
+  ) {
+  }
+
+  next(value: T): void {
+    if (!this.closed) {
+      this.n(value);
+    }
+  }
+
+  error(err: any): void {
+    if (!this.closed) {
+      this.closed = true;
+      this.e(err);
+    }
+  }
+
+  complete(): void {
+    if (!this.closed) {
+      this.closed = true;
+      this.c();
+    }
+  }
+
+  // v4-backwards-compatibility
+  checked(): Observer<T> {
+    return new CheckedObserver(this);
+  }
+
+  // v4-backwards-compatibility
+  asObserver(): Observer<T> {
+    const o = new ObserverImpl<T>(
+      function(this: any, v) { this.__srcObserver.next(v); },
+      function(this: any, e) { this.__srcObserver.error(e); },
+      function(this: any, ) { this.__srcObserver.complete(); }
+    );
+    (o as any).__srcObserver = this;
+    return o;
+  }
 
   // v4-backwards-compatibility
   onNext?: this['next'];
   onError?: this['error'];
   onCompleted?: this['complete'];
+}
+
+// v4-backwards-compatibility
+ObserverImpl.prototype.onNext = ObserverImpl.prototype.next;
+ObserverImpl.prototype.onError = ObserverImpl.prototype.error;
+ObserverImpl.prototype.onCompleted = ObserverImpl.prototype.complete;
+
+// v4-backwards-compatibility
+// `interface` => `class`
+export class Observer<T> {
+  closed?: boolean;
+
+  // v4-backwards-compatibility
+  // make class constructor private to retain rxjs5 interface-ish
+  private constructor() {
+    return Observer.create<any>();
+  }
+
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
 
   // v4-backwards-compatibility
   static create<T>(
@@ -99,15 +212,13 @@ export class Observer<T> {
     maybeError?: Observer<T>['error'],
     maybeComplete?: Observer<T>['complete']
   ): Observer<T> {
-    const next: any = maybeNext || Function.prototype;
-    const error: any = maybeError || defaultError;
-    const complete: any = maybeComplete || Function.prototype;
-    return {
-      next, error, complete,
-      onNext: next,
-      onError: error,
-      onCompleted: complete
-    };
+    const next: any = maybeNext === void 0 || maybeNext === null
+      ? Function.prototype : maybeNext;
+    const error: any = maybeError === void 0 || maybeError === null
+      ? defaultError : maybeError;
+    const complete: any = maybeComplete === void 0 || maybeComplete === null
+      ? Function.prototype : maybeComplete;
+    return new ObserverImpl<T>(next, error, complete);
   }
 
   // v4-backwards-compatibility
@@ -121,21 +232,12 @@ export class Observer<T> {
       return cb(Notification.createComplete());
     });
   }
-}
-
-export const empty: Observer<any> = {
-  closed: true,
-  next(value: any): void { /* noop */},
-  error(err: any): void { throw err; },
-  complete(): void { /*noop*/ },
 
   // v4-backwards-compatibility
-  onNext: void 0 as any,
-  onError: void 0 as any,
-  onCompleted: void 0 as any
-};
+  onNext?: this['next'];
+  onError?: this['error'];
+  onCompleted?: this['complete'];
+}
 
-// v4-backwards-compatibility
-empty.onNext = empty.next;
-empty.onError = empty.error;
-empty.onCompleted = empty.onCompleted;
+export const empty: Observer<any> = Observer.create<any>();
+empty.complete();
