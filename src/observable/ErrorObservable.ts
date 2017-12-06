@@ -13,7 +13,7 @@ export interface DispatchArg {
  * @extends {Ignored}
  * @hide true
  */
-export class ErrorObservable extends Observable<any> {
+export class ErrorObservable<T = any> extends Observable<T> {
 
   /**
    * Creates an Observable that emits no items to the Observer and immediately
@@ -55,8 +55,8 @@ export class ErrorObservable extends Observable<any> {
    * @name throw
    * @owner Observable
    */
-  static create(error: any, scheduler?: IScheduler): ErrorObservable {
-    return new ErrorObservable(error, scheduler);
+  static create<T = any>(error: any, scheduler?: IScheduler): ErrorObservable<T> {
+    return new ErrorObservable<T>(error, scheduler);
   }
 
   static dispatch(arg: DispatchArg) {

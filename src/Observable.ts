@@ -19,6 +19,13 @@ export interface Subscribable<T> {
 export type SubscribableOrPromise<T> = Subscribable<T> | PromiseLike<T>;
 export type ObservableInput<T> = SubscribableOrPromise<T> | ArrayLike<T>;
 
+export declare function CreateFn<T>(
+  subscribe?: ((subscriber: Subscriber<T>) => TeardownLogic) | any[] | {},
+  arg2?: any,
+  arg3?: any
+): Observable<T>;
+export declare function CreateFn<T>(...args: any[]): Observable<T>;
+
 /**
  * A representation of any set of values over any amount of time. This is the most basic building block
  * of RxJS.
@@ -55,9 +62,9 @@ export class Observable<T> implements Subscribable<T> {
    * @param {Function} subscribe? the subscriber function to be passed to the Observable constructor
    * @return {Observable} a new cold observable
    */
-  static create: Function = <T>(subscribe?: (subscriber: Subscriber<T>) => TeardownLogic) => {
+  static create: typeof CreateFn = (<T>(subscribe?: (subscriber: Subscriber<T>) => TeardownLogic) => {
     return new Observable<T>(subscribe);
-  }
+  });
 
   /**
    * Creates a new Observable, with this Observable as the source, and the passed

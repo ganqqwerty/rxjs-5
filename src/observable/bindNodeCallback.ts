@@ -1,3 +1,3 @@
 import {  BoundNodeCallbackObservable  } from './BoundNodeCallbackObservable';
 
-export const bindNodeCallback = BoundNodeCallbackObservable.create;
+export const bindNodeCallback = BoundNodeCallbackObservable.create as Function;

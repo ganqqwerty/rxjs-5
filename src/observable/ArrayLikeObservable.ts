@@ -4,6 +4,7 @@ import { ScalarObservable } from './ScalarObservable';
 import { EmptyObservable } from './EmptyObservable';
 import { Subscriber } from '../Subscriber';
 import { TeardownLogic } from '../Subscription';
+import { CreateFn } from '../Observable';
 
 /**
  * We need this JSDoc comment for affecting ESDoc.
@@ -12,7 +13,7 @@ import { TeardownLogic } from '../Subscription';
  */
 export class ArrayLikeObservable<T> extends Observable<T> {
 
-  static create<T>(arrayLike: ArrayLike<T>, scheduler?: IScheduler): Observable<T> {
+  static create = (<T>(arrayLike: ArrayLike<T>, scheduler?: IScheduler): Observable<T> => {
     const length = arrayLike.length;
     if (length === 0) {
       return new EmptyObservable<T>();
@@ -21,7 +22,7 @@ export class ArrayLikeObservable<T> extends Observable<T> {
     } else {
       return new ArrayLikeObservable(arrayLike, scheduler);
     }
-  }
+  }) as typeof CreateFn;
 
   static dispatch(state: any) {
     const { arrayLike, index, length, subscriber } = state;
