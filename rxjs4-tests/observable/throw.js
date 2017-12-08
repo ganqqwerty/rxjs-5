@@ -21,7 +21,7 @@
     });
 
     results.messages.assertEqual(
-      onError(201, error)
+      onError(200, error)
     );
   });
 

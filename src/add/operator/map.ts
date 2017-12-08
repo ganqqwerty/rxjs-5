@@ -6,6 +6,6 @@ Observable.prototype.map = map;
 
 declare module '../../Observable' {
   interface Observable<T> {
-    map: typeof map;
+    map<R>(this: Observable<T>, project: (value: T, index: number) => R, thisArg?: any): Observable<R>;
   }
 }

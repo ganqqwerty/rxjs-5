@@ -2,12 +2,13 @@ import { Subject } from '../Subject';
 import { Observable } from '../Observable';
 import { ConnectableObservable } from '../observable/ConnectableObservable';
 import { multicast as higherOrder } from '../operators/multicast';
-import { FactoryOrValue, MonoTypeOperatorFunction, OperatorFunction } from '../interfaces';
+// import { FactoryOrValue, MonoTypeOperatorFunction, OperatorFunction } from '../interfaces';
 
 /* tslint:disable:max-line-length */
-export function multicast<T>(this: Observable<T>, subjectOrSubjectFactory: FactoryOrValue<Subject<T>>): ConnectableObservable<T>;
-export function multicast<T>(SubjectFactory: (this: Observable<T>) => Subject<T>, selector?: MonoTypeOperatorFunction<T>): Observable<T>;
-export function multicast<T, R>(SubjectFactory: (this: Observable<T>) => Subject<T>, selector?: OperatorFunction<T, R>): Observable<R>;
+export function multicast<T>(this: Observable<T>, subject: Subject<T>): ConnectableObservable<T>;
+// export function multicast<T>(this: Observable<T>, subjectOrSubjectFactory: FactoryOrValue<Subject<T>>): ConnectableObservable<T>;
+// export function multicast<T>(this: Observable<T>, SubjectFactory: (this: Observable<T>) => Subject<T>, selector?: MonoTypeOperatorFunction<T>): Observable<T>;
+// export function multicast<T, R>(this: Observable<T>, SubjectFactory: (this: Observable<T>) => Subject<T>, selector?: OperatorFunction<T, R>): Observable<R>;
 /* tslint:enable:max-line-length */
 
 /**

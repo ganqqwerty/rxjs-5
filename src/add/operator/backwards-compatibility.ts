@@ -2,12 +2,6 @@
 
 import { Observable } from '../../Observable';
 
-function papp(fn: Function, args1: any[]) {
-  return function(this: any, ...args2: any[]) {
-    return fn.apply(this, args1.concat(args2));
-  };
-}
-
 import { race } from '../../operator/race';
 Observable.prototype.amb = race;
 declare module '../../Observable' {
@@ -34,8 +28,12 @@ declare module '../../Observable' {
 
 import { _do } from '../../operator/do';
 Observable.prototype.doOnNext = _do;
-Observable.prototype.doOnError = papp(_do, [undefined]);
-Observable.prototype.doOnCompleted = papp(_do, [undefined, undefined]);
+Observable.prototype.doOnError = function doOnError<T>(this: Observable<T>, cb: (err: any) => void) {
+  return this.do(undefined, cb);
+};
+Observable.prototype.doOnCompleted = function doOnCompleted<T>(this: Observable<T>, cb: () => void) {
+  return this.do(undefined, undefined, cb);
+};
 declare module '../../Observable' {
   interface Observable<T> {
     doOnNext: typeof _do;
@@ -65,7 +63,7 @@ Observable.prototype.selectSwitch = switchMap;
 Observable.prototype.flatMapLatest = switchMap;
 declare module '../../Observable' {
   interface Observable<T> {
-    flatMapLatest: typeof switchMap;
+    flatMapLatest: <R>(this: Observable<T>, project: (value: T, index: number) => ObservableInput<R>) => Observable<R>;
     selectSwitch: typeof switchMap;
   }
 }
@@ -94,7 +92,7 @@ declare module '../../Observable' {
 
 Observable.prototype.indexOf = function<T>(this: Observable<T>, element: T, fromIndex?: number): Observable<number> {
   const skip = Math.max(typeof fromIndex === 'number' ? fromIndex - 1 : 0, 0);
-  return this.map<T, [boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).first();
+  return this.map<[boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).first();
 };
 declare module '../../Observable' {
   interface Observable<T> {
@@ -104,11 +102,19 @@ declare module '../../Observable' {
 
 Observable.prototype.lastIndexOf = function<T>(this: Observable<T>, element: T, fromIndex?: number): Observable<number> {
   const skip = Math.max(typeof fromIndex === 'number' ? fromIndex - 1 : 0, 0);
-  return this.map<T, [boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).last();
+  return this.map<[boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).last();
 };
 declare module '../../Observable' {
   interface Observable<T> {
     lastIndexOf: (this: Observable<T>, element: T, fromIndex?: number) => Observable<number>;
+  }
+}
+
+import { pausableBuffered } from '../../operator/pausableBuffered';
+Observable.prototype.pausableBuffered_deprecated = pausableBuffered;
+declare module '../../Observable' {
+  interface Observable<T> {
+    pausableBuffered_deprecated: typeof pausableBuffered;
   }
 }
 
@@ -117,6 +123,14 @@ Observable.prototype.select = map;
 declare module '../../Observable' {
   interface Observable<T> {
     select: typeof map;
+  }
+}
+
+import { mergeMap } from '../../operator/mergeMap';
+Observable.prototype.selectMany = mergeMap;
+declare module '../../Observable' {
+  interface Observable<T> {
+    selectMany: typeof mergeMap;
   }
 }
 
@@ -178,8 +192,8 @@ declare module '../../Observable' {
 
 Observable.prototype.tap = _do;
 Observable.prototype.tapOnNext = _do;
-Observable.prototype.tapOnError = papp(_do, [undefined]);
-Observable.prototype.tapOnCompleted = papp(_do, [undefined, undefined]);
+Observable.prototype.tapOnError = Observable.prototype.doOnError;
+Observable.prototype.tapOnCompleted = Observable.prototype.doOnCompleted;
 declare module '../../Observable' {
   interface Observable<T> {
     tap: typeof _do;
@@ -210,55 +224,5 @@ Observable.prototype.windowWithTime = windowTime;
 declare module '../../Observable' {
   interface Observable<T> {
     windowWithTime: typeof windowTime;
-  }
-}
-
-// TODO
-declare module '../../Observable' {
-  interface Observable<T> {
-    and: any;
-    average: any;
-    bufferWithTimeOrCount: any;
-    concatMapObserver: any;
-    controlled: any;
-    delaySubscription: any;
-    doWhile: any;
-    extend: any;
-    flatMapObserver: any;
-    forkJoin: any;
-    groupByUntil: any;
-    groupJoin: any;
-    join: any;
-    joinSortUntil: any;
-    joinSort: any;
-    manySelect: any;
-    maxBy: any;
-    minBy: any;
-    pausableBuffered: any;
-    pausable: any;
-    publishValue: any;
-    replay: any;
-    selectConcatObserver: any;
-    selectConcat: any;
-    selectMany: any;
-    selectManyObserver: any;
-    selectManyWithMaxConcurrent: any;
-    selectMapWithMaxConcurrent: any;
-    selectSwitchFirst: any;
-    shareValue: any;
-    singleInstance: any;
-    skipLastWithTime: any;
-    skipUntilWithTime: any;
-    skipWithTime: any;
-    takeLastBufferWithTime: any;
-    takeLastWithTime: any;
-    takeUntilWithTime: any;
-    takeWithTime: any;
-    thenDo: any;
-    throttleLatest: any;
-    toMap: any;
-    toSet: any;
-    transduce: any;
-    windowWithTimeOrCount: any;
   }
 }
