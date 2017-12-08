@@ -7,12 +7,10 @@ export interface IRxJs4Disposable {
   dispose(): void;
 }
 
-export interface IRxJs5Scheduler {
+export interface IScheduler {
   now(): number;
   schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
 }
-
-export type IScheduler = IRxJs5Scheduler;
 
 /**
  * An execution context and a data structure to order tasks and schedule their
