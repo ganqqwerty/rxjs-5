@@ -48,7 +48,7 @@ export class PromiseObservable<T> extends Observable<T> {
   }
 
   protected _subscribe(subscriber: Subscriber<T>): TeardownLogic {
-    const promise = this.promise;
+    let promise = this.promise;
     const scheduler = this.scheduler;
 
     if (scheduler == null) {
@@ -60,6 +60,7 @@ export class PromiseObservable<T> extends Observable<T> {
       } else {
         promise.then(
           (value) => {
+            this.promise = null;
             this.value = value;
             this._isScalar = true;
             if (!subscriber.closed) {
@@ -68,6 +69,7 @@ export class PromiseObservable<T> extends Observable<T> {
             }
           },
           (err) => {
+            this.promise = null;
             if (!subscriber.closed) {
               subscriber.error(err);
             }
@@ -77,6 +79,7 @@ export class PromiseObservable<T> extends Observable<T> {
           // escape the promise trap, throw unhandled errors
           root.setTimeout(() => { throw err; });
         });
+        promise = null;
       }
     } else {
       if (this._isScalar) {
@@ -86,6 +89,7 @@ export class PromiseObservable<T> extends Observable<T> {
       } else {
         promise.then(
           (value) => {
+            this.promise = null;
             this.value = value;
             this._isScalar = true;
             if (!subscriber.closed) {
@@ -93,6 +97,7 @@ export class PromiseObservable<T> extends Observable<T> {
             }
           },
           (err) => {
+            this.promise = null;
             if (!subscriber.closed) {
               subscriber.add(scheduler.schedule(dispatchError, 0, { err, subscriber }));
             }
@@ -101,6 +106,7 @@ export class PromiseObservable<T> extends Observable<T> {
             // escape the promise trap, throw unhandled errors
             root.setTimeout(() => { throw err; });
           });
+        promise = null;
       }
     }
   }
