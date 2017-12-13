@@ -1,6 +1,6 @@
 {
-  "name": "@reactivex/rxjs",
-  "version": "5.5.3",
+  "name": "@acutmore/rxjs",
+  "version": "1.1.0",
   "description": "Reactive Extensions for modern JavaScript",
   "main": "index.js",
   "config": {
@@ -121,7 +121,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ReactiveX/RxJS.git"
+    "url": "git@github.com:youviewtv:rxjs-5.git"
   },
   "keywords": [
     "Rx",
@@ -164,9 +164,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ReactiveX/RxJS/issues"
+    "url": "https://github.com/youviewtv/rxjs-5/issues"
   },
-  "homepage": "https://github.com/ReactiveX/RxJS",
+  "homepage": "https://github.com/youviewtv/rxjs-5/",
   "devDependencies": {
     "@angular-devkit/build-optimizer": "0.0.24",
     "@types/chai": "^4.0.4",
