@@ -7,6 +7,7 @@ import { TestMessage } from './TestMessage';
 import { SubscriptionLog } from './SubscriptionLog';
 import { Subscription } from '../Subscription';
 import { VirtualTimeScheduler, VirtualAction } from '../scheduler/VirtualTimeScheduler';
+import { MockPromise } from './MockPromise';
 
 // v4-backwards-compatibility
 import {ReactiveTest} from './ReactiveTest';
@@ -158,17 +159,21 @@ export class TestScheduler extends VirtualTimeScheduler {
     };
   }
 
-  flush() {
+  flush(limit = Number.POSITIVE_INFINITY) {
     const hotObservables = this.hotObservables;
     while (hotObservables.length > 0) {
       hotObservables.shift().setup();
     }
 
-    super.flush();
-    const readyFlushTests = this.flushTests.filter(test => test.ready);
-    while (readyFlushTests.length > 0) {
-      const test = readyFlushTests.shift();
-      this.assertDeepEqual(test.actual, test.expected);
+    if (limit === Number.POSITIVE_INFINITY) {
+      super.flush();
+      const readyFlushTests = this.flushTests.filter(test => test.ready);
+      while (readyFlushTests.length > 0) {
+        const test = readyFlushTests.shift();
+        this.assertDeepEqual(test.actual, test.expected);
+      }
+    } else {
+      super.limitedFlush(limit);
     }
   }
 
@@ -328,6 +333,36 @@ export class TestScheduler extends VirtualTimeScheduler {
   public scheduleAbsolute(state: any, dueTime: number, action: () => any) {
     const processedTime = dueTime < this.clock ? this.clock + 1 : dueTime;
     return super.scheduleAbsolute(state, processedTime, action);
+  }
+
+  // v4-backwards-compatibility
+  public advanceBy(time: number): void {
+    this.flush(this.now() + time);
+  }
+
+  // v4-backwards-compatibility
+  public advanceTo(time: number): void {
+    this.flush(time);
+  }
+
+  // v4-backwards-compatibility
+  public createResolvedPromise(time: number, value: any): { then: Function } {
+    return new MockPromise(this, time, value, false);
+  }
+
+  // v4-backwards-compatibility
+  public createRejectedPromise(time: number, rejection: any): { then: Function } {
+    return new MockPromise(this, time, rejection, true);
+  }
+
+  // v4-backwards-compatibility
+  public scheduleRelative(state: any, time: number, action: () => void) {
+    this.schedule(action, this.now() + time, state);
+  }
+
+  // v4-backwards-compatibility
+  public stop() {
+    /* noop */
   }
 
   // v4-backwards-compatibility

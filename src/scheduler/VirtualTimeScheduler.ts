@@ -8,6 +8,7 @@ export class VirtualTimeScheduler extends AsyncScheduler {
 
   public frame: number = 0;
   public index: number = -1;
+  private limit = Number.POSITIVE_INFINITY;
 
   constructor(SchedulerAction: typeof AsyncAction = VirtualAction,
               public maxFrames: number = Number.POSITIVE_INFINITY) {
@@ -24,7 +25,7 @@ export class VirtualTimeScheduler extends AsyncScheduler {
     const {actions, maxFrames} = this;
     let error: any, action: AsyncAction<any>;
 
-    while ((action = actions.shift()) && (this.frame = action.delay) <= maxFrames) {
+    while ((this.frame < this.limit) && (action = actions.shift()) && (this.frame = action.delay) <= maxFrames) {
       if (error = action.execute(action.state, action.delay)) {
         break;
       }
@@ -35,6 +36,15 @@ export class VirtualTimeScheduler extends AsyncScheduler {
         action.unsubscribe();
       }
       throw error;
+    }
+  }
+
+  public limitedFlush(limit = Number.POSITIVE_INFINITY) {
+    this.limit = limit;
+    try {
+      this.flush();
+    } finally {
+      this.limit = Number.POSITIVE_INFINITY;
     }
   }
 
