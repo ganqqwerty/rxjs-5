@@ -239,5 +239,12 @@ export class Observer<T> {
   onCompleted?: this['complete'];
 }
 
-export const empty: Observer<any> = Observer.create<any>();
-empty.complete();
+export const empty: Observer<any> = {
+  closed: true,
+  next(value: any): void { /* noop */},
+  error(err: any): void { throw err; },
+  complete(): void { /*noop*/ },
+  onNext(value: any): void { /* noop */},
+  onError(err: any): void { throw err; },
+  onCompleted(): void { /*noop*/ }
+};
