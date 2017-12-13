@@ -27,6 +27,13 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
     }
   }
 
+  private drainQueue() {
+    const { buffer } = this;
+    while (buffer.length > 0) {
+      this.destination.next(buffer.shift());
+    }
+  }
+
   notifyNext(outerValue: T, flowing: boolean,
              outerIndex: number, innerIndex: number,
              innerSub: InnerSubscriber<T, boolean>
@@ -35,21 +42,15 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
       return;
     }
     this.flowing = flowing;
-    const { buffer } = this;
-    const len = buffer.length;
-    if (flowing && len > 0) {
-      const b2 = buffer.slice();
-      b2.length = 0;
-      for (let i = 0; i < len; i++) {
-        const v = b2[i];
-        this.destination.next(v);
-      }
+    if (flowing) {
+      this.drainQueue();
     }
   }
 
   protected _complete(): void {
     this.srcCompleted = true;
-    if (this.buffer.length === 0 || this.pauserCompleted) {
+    if (this.pauserCompleted) {
+      this.drainQueue();
       this.destination.complete();
     }
   }
@@ -58,9 +59,18 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
     this.pauserCompleted = true;
     this.remove(innerSub);
     if (this.srcCompleted) {
-      this.buffer.length = 0;
+      this.drainQueue();
       this.destination.complete();
     }
+  }
+
+  protected _error(err: any): void {
+    this.drainQueue();
+    this.destination.error(err);
+  }
+
+  notifyError(err: any): void {
+    this._error(err);
   }
 }
 
