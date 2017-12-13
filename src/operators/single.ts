@@ -85,8 +85,8 @@ class SingleSubscriber<T> extends Subscriber<T> {
   protected _complete(): void {
     const destination = this.destination;
 
-    if (this.index > 0) {
-      destination.next(this.seenValue ? this.singleValue : undefined);
+    if (this.seenValue) {
+      destination.next(this.singleValue);
       destination.complete();
     } else {
       destination.error(new EmptyError);
