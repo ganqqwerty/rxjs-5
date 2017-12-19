@@ -1,3 +1,4 @@
+// v4-backwards-compatibility
 import { Observable } from '../Observable';
 import { Operator } from '../Operator';
 import { Subscriber } from '../Subscriber';
@@ -12,6 +13,7 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
   private pauserCompleted = false;
   private flowing = false;
   private buffer: T[] = [];
+  private draining = false;
 
   constructor(protected destination: Subscriber<T>, private pauser: Observable<boolean>) {
     super(destination);
@@ -27,10 +29,22 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
     }
   }
 
-  private drainQueue() {
+  private __drain() {
     const { buffer } = this;
     while (buffer.length > 0) {
-      this.destination.next(buffer.shift());
+        this.destination.next(buffer.shift());
+    }
+  }
+
+  private drainQueue() {
+    if (this.draining) {
+      return;
+    }
+    this.draining = true;
+    try {
+      this.__drain();
+    } finally {
+      this.draining = false;
     }
   }
 
