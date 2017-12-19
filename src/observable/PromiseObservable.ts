@@ -13,6 +13,10 @@ export class PromiseObservable<T> extends Observable<T> {
 
   public value: T;
 
+  // youView-specific memory leak fix
+  private __isError = false;
+  private __error: any;
+
   /**
    * Converts a Promise to an Observable.
    *
@@ -57,9 +61,15 @@ export class PromiseObservable<T> extends Observable<T> {
           subscriber.next(this.value);
           subscriber.complete();
         }
+      } else if (this.__isError) {
+        // youView-specific memory leak fix
+        if (!subscriber.closed) {
+          subscriber.error(this.__error);
+        }
       } else {
         promise.then(
           (value) => {
+            // youView-specific memory leak fix
             this.promise = null;
             this.value = value;
             this._isScalar = true;
@@ -69,7 +79,10 @@ export class PromiseObservable<T> extends Observable<T> {
             }
           },
           (err) => {
+            // youView-specific memory leak fix
             this.promise = null;
+            this.__isError = true;
+            this.__error = err;
             if (!subscriber.closed) {
               subscriber.error(err);
             }
@@ -79,6 +92,7 @@ export class PromiseObservable<T> extends Observable<T> {
           // escape the promise trap, throw unhandled errors
           root.setTimeout(() => { throw err; });
         });
+        // youView-specific memory leak fix
         promise = null;
       }
     } else {
@@ -86,9 +100,15 @@ export class PromiseObservable<T> extends Observable<T> {
         if (!subscriber.closed) {
           return scheduler.schedule(dispatchNext, 0, { value: this.value, subscriber });
         }
+       } else if (this.__isError) {
+        // youView-specific memory leak fix
+        if (!subscriber.closed) {
+          return scheduler.schedule(dispatchError, 0, { err: this.__error, subscriber });
+        }
       } else {
         promise.then(
           (value) => {
+            // youView-specific memory leak fix
             this.promise = null;
             this.value = value;
             this._isScalar = true;
@@ -97,7 +117,10 @@ export class PromiseObservable<T> extends Observable<T> {
             }
           },
           (err) => {
+            // youView-specific memory leak fix
             this.promise = null;
+            this.__isError = true;
+            this.__error = err;
             if (!subscriber.closed) {
               subscriber.add(scheduler.schedule(dispatchError, 0, { err, subscriber }));
             }
@@ -106,6 +129,7 @@ export class PromiseObservable<T> extends Observable<T> {
             // escape the promise trap, throw unhandled errors
             root.setTimeout(() => { throw err; });
           });
+        // youView-specific memory leak fix
         promise = null;
       }
     }
