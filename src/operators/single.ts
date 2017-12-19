@@ -85,6 +85,7 @@ class SingleSubscriber<T> extends Subscriber<T> {
   protected _complete(): void {
     const destination = this.destination;
 
+    // v4-backwards-compatibility
     if (this.seenValue) {
       destination.next(this.singleValue);
       destination.complete();

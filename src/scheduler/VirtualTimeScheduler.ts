@@ -8,6 +8,7 @@ export class VirtualTimeScheduler extends AsyncScheduler {
 
   public frame: number = 0;
   public index: number = -1;
+  // v4-backwards-compatibility
   private limit = Number.POSITIVE_INFINITY;
 
   constructor(SchedulerAction: typeof AsyncAction = VirtualAction,
@@ -39,6 +40,7 @@ export class VirtualTimeScheduler extends AsyncScheduler {
     }
   }
 
+  // v4-backwards-compatibility
   public limitedFlush(limit: number) {
     this.limit = limit;
     try {
