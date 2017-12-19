@@ -27,7 +27,7 @@ export class DisposableImpl implements ISubscription {
 
     dispose: this['unsubscribe'];
 };
-DisposableImpl.prototype.dispose = DisposableImpl.prototype.unsubscribe;
+DisposableImpl.prototype.dispose = function() { this.unsubscribe(); };
 
 export class Disposable implements ISubscription {
 
@@ -53,7 +53,7 @@ export class Disposable implements ISubscription {
 
     dispose: this['unsubscribe'];
 };
-Disposable.prototype.dispose = Disposable.prototype.unsubscribe;
+Disposable.prototype.dispose = function() { this.unsubscribe(); };
 
 export class CompositeDisposable implements ISubscription, Disposable {
 
@@ -113,13 +113,13 @@ export class CompositeDisposable implements ISubscription, Disposable {
 
     dispose: this['unsubscribe'];
 }
-CompositeDisposable.prototype.dispose = CompositeDisposable.prototype.unsubscribe;
+CompositeDisposable.prototype.dispose = function() { this.unsubscribe(); };
 
 export class SerialDisposable implements ISubscription, Disposable {
     public closed: boolean = false;
     private current: ISubscription;
 
-    dispose() {
+    unsubscribe() {
         if (this.closed) {
             return;
         }
@@ -153,16 +153,16 @@ export class SerialDisposable implements ISubscription, Disposable {
         return this.closed;
     }
 
-    unsubscribe: this['dispose'];
+    dispose: this['unsubscribe'];
 };
 
-SerialDisposable.prototype.unsubscribe = SerialDisposable.prototype.dispose;
+SerialDisposable.prototype.dispose = function() { this.unsubscribe(); };
 
 export class SingleAssignmentDisposable implements ISubscription, Disposable {
     public closed: boolean = false;
     private disposable: ISubscription;
 
-    dispose() {
+    unsubscribe() {
         if (this.closed) {
             return;
         }
@@ -195,9 +195,9 @@ export class SingleAssignmentDisposable implements ISubscription, Disposable {
         return this.closed;
     }
 
-    unsubscribe: this['dispose'];
+    dispose: this['unsubscribe'];
 }
-SingleAssignmentDisposable.prototype.unsubscribe = SingleAssignmentDisposable.prototype.dispose;
+SingleAssignmentDisposable.prototype.dispose = function() { this.unsubscribe(); };
 
 export class RefCountDisposable implements ISubscription {
 
@@ -211,7 +211,7 @@ export class RefCountDisposable implements ISubscription {
     constructor(private subscription: ISubscription) {
     }
 
-    dispose() {
+    unsubscribe() {
         if (this.primaryDisposed) {
             return;
         }
@@ -239,8 +239,8 @@ export class RefCountDisposable implements ISubscription {
         });
     }
 
-    unsubscribe: this['dispose'];
+    dispose: this['unsubscribe'];
 }
-RefCountDisposable.prototype.unsubscribe = RefCountDisposable.prototype.dispose;
+RefCountDisposable.prototype.dispose = function() { this.unsubscribe(); };
 
 export type IDisposable = ISubscription;
