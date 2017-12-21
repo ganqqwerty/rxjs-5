@@ -32,6 +32,11 @@ export class VirtualTimeScheduler extends AsyncScheduler {
       }
     }
 
+    // v4-backwards-compatibility
+    if (this.limit !== Number.POSITIVE_INFINITY) {
+      this.frame = this.limit;
+    }
+
     if (error) {
       while (action = actions.shift()) {
         action.unsubscribe();

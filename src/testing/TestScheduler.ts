@@ -13,8 +13,8 @@ import { MockPromise } from './MockPromise';
 import {ReactiveTest} from './ReactiveTest';
 
 // v4-backwards-compatibility
-// 750 => 5000
-const defaultMaxFrame: number = 5000;
+// 750 => 100,001
+const defaultMaxFrame: number = (100 * 1000) + 1;
 
 interface FlushableTest {
   ready: boolean;
