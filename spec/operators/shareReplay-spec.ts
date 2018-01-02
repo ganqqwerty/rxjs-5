@@ -13,11 +13,11 @@ declare const rxTestScheduler: typeof marbleTestingSignature.rxTestScheduler;
 const Observable = Rx.Observable;
 
 /** @test {shareReplay} */
-describe('Observable.prototype.shareReplay', () => {
+describe('Observable.prototype.shareReplay_persisted', () => {
   it('should mirror a simple source Observable', () => {
     const source = cold('--1-2---3-4--5-|');
     const sourceSubs =  '^              !';
-    const published = source.shareReplay();
+    const published = source.shareReplay_persisted();
     const expected =    '--1-2---3-4--5-|';
 
     expectObservable(published).toBe(expected);
@@ -29,12 +29,12 @@ describe('Observable.prototype.shareReplay', () => {
     const source = new Observable(() => {
       subscribed = true;
     });
-    source.shareReplay();
+    source.shareReplay_persisted();
     expect(subscribed).to.be.false;
   });
 
   it('should multicast the same values to multiple observers, bufferSize=1', () => {
-    const source =     cold('-1-2-3----4-|'); const shared = source.shareReplay(1);
+    const source =     cold('-1-2-3----4-|'); const shared = source.shareReplay_persisted(1);
     const sourceSubs =      '^           !';
     const subscriber1 = hot('a|           ').mergeMapTo(shared);
     const expected1   =     '-1-2-3----4-|';
@@ -50,7 +50,7 @@ describe('Observable.prototype.shareReplay', () => {
   });
 
   it('should multicast the same values to multiple observers, bufferSize=2', () => {
-    const source =     cold('-1-2-----3------4-|'); const shared = source.shareReplay(2);
+    const source =     cold('-1-2-----3------4-|'); const shared = source.shareReplay_persisted(2);
     const sourceSubs =      '^                 !';
     const subscriber1 = hot('a|                 ').mergeMapTo(shared);
     const expected1   =     '-1-2-----3------4-|';
@@ -66,7 +66,7 @@ describe('Observable.prototype.shareReplay', () => {
   });
 
   it('should multicast an error from the source to multiple observers', () => {
-    const source =     cold('-1-2-3----4-#'); const shared = source.shareReplay(1);
+    const source =     cold('-1-2-3----4-#'); const shared = source.shareReplay_persisted(1);
     const sourceSubs =      '^           !';
     const subscriber1 = hot('a|           ').mergeMapTo(shared);
     const expected1   =     '-1-2-3----4-#';
@@ -84,7 +84,7 @@ describe('Observable.prototype.shareReplay', () => {
   it('should multicast an empty source', () => {
     const source = cold('|');
     const sourceSubs =  '(^!)';
-    const shared = source.shareReplay(1);
+    const shared = source.shareReplay_persisted(1);
     const expected =    '|';
 
     expectObservable(shared).toBe(expected);
@@ -95,7 +95,7 @@ describe('Observable.prototype.shareReplay', () => {
     const source = cold('-');
     const sourceSubs =  '^';
 
-    const shared = source.shareReplay(1);
+    const shared = source.shareReplay_persisted(1);
     const expected =    '-';
 
     expectObservable(shared).toBe(expected);
@@ -105,7 +105,7 @@ describe('Observable.prototype.shareReplay', () => {
   it('should multicast a throw source', () => {
     const source = cold('#');
     const sourceSubs =  '(^!)';
-    const shared = source.shareReplay(1);
+    const shared = source.shareReplay_persisted(1);
     const expected =    '#';
 
     expectObservable(shared).toBe(expected);
@@ -114,7 +114,7 @@ describe('Observable.prototype.shareReplay', () => {
 
   it('should replay results to subsequent subscriptions if source completes, bufferSize=2', () => {
     const source =     cold('-1-2-----3-|        ');
-    const shared = source.shareReplay(2);
+    const shared = source.shareReplay_persisted(2);
     const sourceSubs =      '^          !        ';
     const subscriber1 = hot('a|                  ').mergeMapTo(shared);
     const expected1   =     '-1-2-----3-|        ';
@@ -131,7 +131,7 @@ describe('Observable.prototype.shareReplay', () => {
 
   it('should completely restart for subsequent subscriptions if source errors, bufferSize=2', () => {
     const source =     cold('-1-2-----3-#               ');
-    const shared = source.shareReplay(2);
+    const shared = source.shareReplay_persisted(2);
     const sourceSubs1 =     '^          !               ';
     const subscriber1 = hot('a|                         ').mergeMapTo(shared);
     const expected1   =     '-1-2-----3-#               ';
@@ -150,7 +150,7 @@ describe('Observable.prototype.shareReplay', () => {
   it('should be retryable, bufferSize=2', () => {
     const subs = [];
     const source =     cold('-1-2-----3-#                      ');
-    const shared = source.shareReplay(2).retry(1);
+    const shared = source.shareReplay_persisted(2).retry(1);
     subs.push(              '^          !                      ');
     subs.push(              '           ^          !           ');
     subs.push(              '                      ^          !');
@@ -171,7 +171,7 @@ describe('Observable.prototype.shareReplay', () => {
     const results = [];
     const source = Rx.Observable.interval(10, rxTestScheduler)
       .take(10)
-      .shareReplay(1);
+      .shareReplay_persisted(1);
     const subs = source.subscribe(x => results.push(x));
     rxTestScheduler.schedule(() => subs.unsubscribe(), 35);
     rxTestScheduler.schedule(() => source.subscribe(x => results.push(x)), 54);
@@ -195,7 +195,7 @@ describe('Observable.prototype.shareReplay', () => {
       observer.next(2);
       observer.next(3);
       observer.complete();
-    }).shareReplay();
+    }).shareReplay_persisted();
 
     expect(result instanceof MyCustomObservable).to.be.true;
 

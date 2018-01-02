@@ -11,7 +11,7 @@ declare const rxTestScheduler: Rx.TestScheduler;
 const Observable = Rx.Observable;
 
 /** @test {windowWhen} */
-describe('Observable.prototype.windowWhen', () => {
+describe('Observable.prototype.window', () => {
   asDiagram('windowWhen')('should emit windows that close and reopen', () => {
     const e1 = hot('--a--^--b--c--d--e--f--g--h--i--|');
     const e1subs =      '^                          !';
@@ -25,7 +25,7 @@ describe('Observable.prototype.windowWhen', () => {
     const expected =    'a----------b----------c----|';
     const values = { a: a, b: b, c: c };
 
-    const source = e1.windowWhen(() => e2);
+    const source = e1.window(() => e2);
 
     expectObservable(source).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -49,7 +49,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y, z: z };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -75,7 +75,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y, z: z };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++].obs);
+    const result = e1.window(() => closings[i++].obs);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(subs);
@@ -101,7 +101,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y, z: z };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -125,7 +125,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result, unsub).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -150,7 +150,7 @@ describe('Observable.prototype.windowWhen', () => {
     let i = 0;
     const result = e1
       .mergeMap((x: string) => Observable.of(x))
-      .windowWhen(() => closings[i++])
+      .window(() => closings[i++])
       .mergeMap((x: Rx.Observable<string>) => Observable.of(x));
 
     expectObservable(result, unsub).toBe(expected, values);
@@ -173,7 +173,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y };
 
     let i = 0;
-    const result = e1.windowWhen(() => {
+    const result = e1.window(() => {
       if (i === 1) {
         throw 'error';
       }
@@ -199,7 +199,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -221,7 +221,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -243,7 +243,7 @@ describe('Observable.prototype.windowWhen', () => {
     const values = { x: x, y: y };
 
     let i = 0;
-    const result = e1.windowWhen(() => closings[i++]);
+    const result = e1.window(() => closings[i++]);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -259,7 +259,7 @@ describe('Observable.prototype.windowWhen', () => {
     const expected = '(w|)';
     const values = { w: cold('|') };
 
-    const result = e1.windowWhen(() => e2);
+    const result = e1.window(() => e2);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -283,7 +283,7 @@ describe('Observable.prototype.windowWhen', () => {
     const expected = 'a----b----c----d--';
     const values = { a: win, b: win, c: win, d: d };
 
-    const result = e1.windowWhen(() => e2);
+    const result = e1.window(() => e2);
 
     expectObservable(result, unsub).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -299,7 +299,7 @@ describe('Observable.prototype.windowWhen', () => {
     const expected = '(w#)';
     const values = { w: win };
 
-    const result = e1.windowWhen(() => e2);
+    const result = e1.window(() => e2);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -315,7 +315,7 @@ describe('Observable.prototype.windowWhen', () => {
     const x = cold(     '----b---c---d---e---f---g---h------|');
     const values = { x: x };
 
-    const result = e1.windowWhen(() => e2);
+    const result = e1.window(() => e2);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -331,7 +331,7 @@ describe('Observable.prototype.windowWhen', () => {
     const x = cold(     '#                                   ');
     const values = { x: x };
 
-    const result = e1.windowWhen(() => e2);
+    const result = e1.window(() => e2);
 
     expectObservable(result).toBe(expected, values);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);

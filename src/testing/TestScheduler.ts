@@ -99,11 +99,11 @@ export class TestScheduler extends VirtualTimeScheduler {
                                      outerFrame: number): TestMessage[] {
     const messages: TestMessage[] = [];
     observable.subscribe((value) => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createNext(value), get value() { return this.notification; } });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createNext(value) });
     }, (err) => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createError(err), get value() { return this.notification; } });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createError(err) });
     }, () => {
-      messages.push({ frame: this.frame - outerFrame, notification: Notification.createComplete(), get value() { return this.notification; } });
+      messages.push({ frame: this.frame - outerFrame, notification: Notification.createComplete() });
     });
     return messages;
   }
@@ -123,11 +123,11 @@ export class TestScheduler extends VirtualTimeScheduler {
         if (x instanceof Observable) {
           value = this.materializeInnerObservable(value, this.frame);
         }
-        actual.push({ frame: this.frame, notification: Notification.createNext(value), get value() { return this.notification; } });
+        actual.push({ frame: this.frame, notification: Notification.createNext(value) });
       }, (err) => {
-        actual.push({ frame: this.frame, notification: Notification.createError(err), get value() { return this.notification; } });
+        actual.push({ frame: this.frame, notification: Notification.createError(err) });
       }, () => {
-        actual.push({ frame: this.frame, notification: Notification.createComplete(), get value() { return this.notification; } });
+        actual.push({ frame: this.frame, notification: Notification.createComplete() });
       });
     }, 0);
 
@@ -277,7 +277,7 @@ export class TestScheduler extends VirtualTimeScheduler {
       }
 
       if (notification) {
-        testMessages.push({ frame: groupStart > -1 ? groupStart : frame, notification, get value() { return this.notification; } });
+        testMessages.push({ frame: groupStart > -1 ? groupStart : frame, notification });
       }
     }
     return testMessages;
@@ -289,11 +289,11 @@ export class TestScheduler extends VirtualTimeScheduler {
     const messages = [] as TestMessage[];
     const obs = Observer.create<any>(
       (v: any) => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createNext(v), get value() { return this.notification; } });
+        messages.push({ frame: scheduler.now(), notification: Notification.createNext(v) });
       }, (err: any) => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createError(err), get value() { return this.notification; } });
+        messages.push({ frame: scheduler.now(), notification: Notification.createError(err) });
       }, () => {
-        messages.push({ frame: scheduler.now(), notification: Notification.createComplete(), get value() { return this.notification; } });
+        messages.push({ frame: scheduler.now(), notification: Notification.createComplete() });
       }) as Observer<any> & { messages: TestMessage[] };
     obs.messages = messages;
     return obs;
@@ -331,8 +331,8 @@ export class TestScheduler extends VirtualTimeScheduler {
 
    // v4-backwards-compatibility
   public scheduleAbsolute(state: any, dueTime: number, action: () => any) {
-    const processedTime = dueTime < this.clock ? this.clock + 1 : dueTime;
-    return super.scheduleAbsolute(state, processedTime, action);
+    const delay = dueTime - this.clock;
+    return super.scheduleAbsolute(state, Math.max(0, delay), action);
   }
 
   // v4-backwards-compatibility
@@ -356,8 +356,8 @@ export class TestScheduler extends VirtualTimeScheduler {
   }
 
   // v4-backwards-compatibility
-  public scheduleRelative(state: any, time: number, action: () => void) {
-    this.schedule(action, this.now() + time, state);
+  public scheduleRelative(state: any, delay: number, action: () => void) {
+    this.schedule(action, delay, state);
   }
 
   // v4-backwards-compatibility
@@ -370,4 +370,4 @@ export class TestScheduler extends VirtualTimeScheduler {
 }
 
 // v4-backwards-compatibility
-TestScheduler.prototype.start = TestScheduler.prototype.flush;
+TestScheduler.prototype.start = function() { this.flush(); };

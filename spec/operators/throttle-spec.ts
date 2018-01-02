@@ -11,7 +11,7 @@ declare const expectSubscriptions: typeof marbleTestingSignature.expectSubscript
 const Observable = Rx.Observable;
 
 /** @test {throttle} */
-describe('Observable.prototype.throttle', () =>  {
+describe('Observable.prototype.throttleV5', () =>  {
   asDiagram('throttle')('should immediately emit the first value in each time window', () =>  {
     const e1 =   hot('-a-xy-----b--x--cxxx-|');
     const e1subs =   '^                    !';
@@ -21,7 +21,7 @@ describe('Observable.prototype.throttle', () =>  {
                    '                ^   ! '];
     const expected = '-a--------b-----c----|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -37,7 +37,7 @@ describe('Observable.prototype.throttle', () =>  {
                    '                ^   ! '];
     const expected = '-a--------b-----c----|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -53,7 +53,7 @@ describe('Observable.prototype.throttle', () =>  {
                    '                ^   ! '];
     const expected = '-a--------b-----c----|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -68,7 +68,7 @@ describe('Observable.prototype.throttle', () =>  {
     const e2subs =   ' ^            !               ';
     const expected = '-a-------------               ';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result, unsub).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -85,7 +85,7 @@ describe('Observable.prototype.throttle', () =>  {
 
     const result = e1
       .mergeMap((x: string) => Observable.of(x))
-      .throttle(() =>  e2)
+      .throttleV5(() =>  e2)
       .mergeMap((x: string) => Observable.of(x));
 
     expectObservable(result, unsub).toBe(expected);
@@ -104,7 +104,7 @@ describe('Observable.prototype.throttle', () =>  {
                    '                        ^!'];
     const expected = 'a-----a-----a-----a-----a|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -117,7 +117,7 @@ describe('Observable.prototype.throttle', () =>  {
     const e2 =  cold('|');
     const expected = 'abcdefabcdefabcdefabcdefa|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -130,7 +130,7 @@ describe('Observable.prototype.throttle', () =>  {
     const e2subs =   '    ^                        !';
     const expected = '----a------------------------|';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -144,7 +144,7 @@ describe('Observable.prototype.throttle', () =>  {
     const e2subs =   '    ^                        !';
     const expected = '----a------------------------#';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -158,7 +158,7 @@ describe('Observable.prototype.throttle', () =>  {
     const e2subs =   '    (^!)                      ';
     const expected = '----(a#)                      ';
 
-    const result = e1.throttle(() =>  e2);
+    const result = e1.throttleV5(() =>  e2);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -181,7 +181,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = 'a-----a---a-------a--a|   ';
 
     let i = 0;
-    const result = e1.throttle(() =>  e2[i++]);
+    const result = e1.throttleV5(() =>  e2[i++]);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -202,7 +202,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = 'a-----a---a------#        ';
 
     let i = 0;
-    const result = e1.throttle(() =>  e2[i++]);
+    const result = e1.throttleV5(() =>  e2[i++]);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -222,7 +222,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = 'a-----a---#               ';
 
     let i = 0;
-    const result = e1.throttle(() =>  {
+    const result = e1.throttleV5(() =>  {
       if (i === 2) {
         throw 'error';
       }
@@ -242,7 +242,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = '-----|';
     function durationSelector() { return cold('-----|'); }
 
-    expectObservable(e1.throttle(durationSelector)).toBe(expected);
+    expectObservable(e1.throttleV5(durationSelector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -252,7 +252,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = '-----#';
     function durationSelector() { return cold('-----|'); }
 
-    expectObservable(e1.throttle(durationSelector)).toBe(expected);
+    expectObservable(e1.throttleV5(durationSelector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -262,7 +262,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = '|';
     function durationSelector() { return cold('-----|'); }
 
-    expectObservable(e1.throttle(durationSelector)).toBe(expected);
+    expectObservable(e1.throttleV5(durationSelector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -272,7 +272,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = '-';
     function durationSelector() { return cold('-----|'); }
 
-    expectObservable(e1.throttle(durationSelector)).toBe(expected);
+    expectObservable(e1.throttleV5(durationSelector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -282,7 +282,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = '#';
     function durationSelector() { return cold('-----|'); }
 
-    expectObservable(e1.throttle(durationSelector)).toBe(expected);
+    expectObservable(e1.throttleV5(durationSelector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -294,7 +294,7 @@ describe('Observable.prototype.throttle', () =>  {
     );
     const expected = [1, 2, 3, 4];
 
-    e1.throttle(() =>  {
+    e1.throttleV5(() =>  {
       return new Promise((resolve: any) => { resolve(42); });
     }).subscribe(
       (x: number) => {
@@ -318,7 +318,7 @@ describe('Observable.prototype.throttle', () =>  {
     const expected = [1, 2, 3];
     const error = new Error('error');
 
-    e1.throttle((x: number) => {
+    e1.throttleV5((x: number) => {
       if (x === 3) {
         return new Promise((resolve: any, reject: any) => { reject(error); });
       } else {
@@ -348,7 +348,7 @@ describe('Observable.prototype.throttle', () =>  {
                        '                ^   !  '];
       const expected = '-a---y----b---x-c---x-|';
 
-      const result = e1.throttle(() =>  e2, { leading: true, trailing: true });
+      const result = e1.throttleV5(() =>  e2, { leading: true, trailing: true });
 
       expectObservable(result).toBe(expected);
       expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -366,7 +366,7 @@ describe('Observable.prototype.throttle', () =>  {
                        '                ^   !  '];
       const expected = '-----y--------x-----x-|';
 
-      const result = e1.throttle(() =>  e2, { leading: false, trailing: true });
+      const result = e1.throttleV5(() =>  e2, { leading: false, trailing: true });
 
       expectObservable(result).toBe(expected);
       expectSubscriptions(e1.subscriptions).toBe(e1subs);

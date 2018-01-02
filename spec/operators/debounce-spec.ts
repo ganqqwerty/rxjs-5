@@ -11,7 +11,7 @@ declare const rxTestScheduler: Rx.TestScheduler;
 const Observable = Rx.Observable;
 
 /** @test {debounce} */
-describe('Observable.prototype.debounce', () => {
+describe('Observable.prototype.debounceV5', () => {
   function getTimerSelector(x) {
     return () => Observable.timer(x, rxTestScheduler);
   }
@@ -21,7 +21,7 @@ describe('Observable.prototype.debounce', () => {
     const e2 =  cold('--|          ');
     const expected = '---a---c--d-|';
 
-    const result = e1.debounce(() => e2);
+    const result = e1.debounceV5(() => e2);
 
     expectObservable(result).toBe(expected);
   });
@@ -31,7 +31,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^                    !';
     const expected = '----a--b--c--d-------|';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -40,7 +40,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^             !';
     const expected = '----a---c--d--|';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -49,7 +49,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^    !';
     const expected = '-----|';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -58,7 +58,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '(^!)';
     const expected = '|';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -67,7 +67,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^    !';
     const expected = '-----#';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -76,7 +76,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '(^!)';
     const expected = '#';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -86,7 +86,7 @@ describe('Observable.prototype.debounce', () => {
     const expected = '----a---       ';
     const unsub =    '       !       ';
 
-    const result = e1.debounce(getTimerSelector(20));
+    const result = e1.debounceV5(getTimerSelector(20));
 
     expectObservable(result, unsub).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -100,7 +100,7 @@ describe('Observable.prototype.debounce', () => {
 
     const result = e1
       .mergeMap((x: any) => Observable.of(x))
-      .debounce(getTimerSelector(20))
+      .debounceV5(getTimerSelector(20))
       .mergeMap((x: any) => Observable.of(x));
 
     expectObservable(result, unsub).toBe(expected);
@@ -112,7 +112,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^            ';
     const expected = '----a---c--d-';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -121,7 +121,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^';
     const expected = '-';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -130,7 +130,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^';
     const expected = '-';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -139,7 +139,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^                    !';
     const expected = '----a--b--c--d-------#';
 
-    expectObservable(e1.debounce(getTimerSelector(20))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(20))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -148,7 +148,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^                   !';
     const expected = '--------------------(e|)';
 
-    expectObservable(e1.debounce(getTimerSelector(40))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(40))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -157,7 +157,7 @@ describe('Observable.prototype.debounce', () => {
     const e1subs =   '^            !';
     const expected = '-------------#';
 
-    expectObservable(e1.debounce(getTimerSelector(50))).toBe(expected);
+    expectObservable(e1.debounceV5(getTimerSelector(50))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -173,7 +173,7 @@ describe('Observable.prototype.debounce', () => {
                     '               ^ !           ',
                     '                    ^ !      '];
 
-    expectObservable(e1.debounce(() => selector)).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     expectSubscriptions(selector.subscriptions).toBe(selectorSubs);
   });
@@ -194,7 +194,7 @@ describe('Observable.prototype.debounce', () => {
                      '               ^    !        ',
                      '                    ^ !      '];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -217,7 +217,7 @@ describe('Observable.prototype.debounce', () => {
                      '               ^    ! ',
                      '                    ^!'];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -236,7 +236,7 @@ describe('Observable.prototype.debounce', () => {
                    '                 ^ !          ',
                    '                          ^  !'];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -257,7 +257,7 @@ describe('Observable.prototype.debounce', () => {
                    '                          ^  !        ',
                    '                                    ^!'];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -282,7 +282,7 @@ describe('Observable.prototype.debounce', () => {
       }
     }
 
-    expectObservable(e1.debounce(selectorFunction)).toBe(expected);
+    expectObservable(e1.debounceV5(selectorFunction)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -296,7 +296,7 @@ describe('Observable.prototype.debounce', () => {
 
     function selectorFunction(x) { return Observable.empty<number>(); }
 
-    expectObservable(e1.debounce(selectorFunction)).toBe(expected);
+    expectObservable(e1.debounceV5(selectorFunction)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -307,7 +307,7 @@ describe('Observable.prototype.debounce', () => {
 
     function selectorFunction(x) { return Observable.never<number>(); }
 
-    expectObservable(e1.debounce(selectorFunction)).toBe(expected);
+    expectObservable(e1.debounceV5(selectorFunction)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
@@ -323,7 +323,7 @@ describe('Observable.prototype.debounce', () => {
                    '                 ^ !                 ',
                    '                          ^  !       '];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -346,7 +346,7 @@ describe('Observable.prototype.debounce', () => {
                      '                   ^!              ',
                      '                    ^    !         '];
 
-    expectObservable(e1.debounce(() => selector.shift())).toBe(expected);
+    expectObservable(e1.debounceV5(() => selector.shift())).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
     for (let i = 0; i < selectorSubs.length; i++) {
       expectSubscriptions(selector[i].subscriptions).toBe(selectorSubs[i]);
@@ -361,7 +361,7 @@ describe('Observable.prototype.debounce', () => {
       );
     const expected = [1, 2, 3, 4];
 
-    e1.debounce(() => {
+    e1.debounceV5(() => {
       return new Promise((resolve: any) => { resolve(42); });
     }).subscribe((x: number) => {
       expect(x).to.equal(expected.shift()); },
@@ -383,7 +383,7 @@ describe('Observable.prototype.debounce', () => {
     const expected = [1, 2];
     const error = new Error('error');
 
-    e1.debounce((x: number) => {
+    e1.debounceV5((x: number) => {
       if (x === 3) {
         return new Promise((resolve: any, reject: any) => { reject(error); });
       } else {

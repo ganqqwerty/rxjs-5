@@ -32,7 +32,7 @@ describe('Observable.interval', () => {
 
   it('should set up an interval', () => {
     const expected = '----------0---------1---------2---------3---------4---------5---------6-----';
-    expectObservable(Observable.interval(100, rxTestScheduler)).toBe(expected, [0, 1, 2, 3, 4, 5, 6]);
+    expectObservable(Observable.interval(100, rxTestScheduler).take(7).merge(Observable.never())).toBe(expected, [0, 1, 2, 3, 4, 5, 6]);
   });
 
   it('should specify default scheduler if incorrect scheduler specified', () => {

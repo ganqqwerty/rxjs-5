@@ -18,13 +18,13 @@ export const ReactiveTest = {
      */
     subscribed: 200,
     onNext: function(ticks: number, value: any): TestMessage {
-        return { frame: ticks, notification: Notification.createNext(value), get value() { return this.notification; } };
+        return { frame: ticks, notification: Notification.createNext(value) };
     },
     onError: function(ticks: number, err: any) {
-        return { frame: ticks, notification: Notification.createError(err), get value() { return this.notification; } };
+        return { frame: ticks, notification: Notification.createError(err) };
     },
     onCompleted: function(ticks: number) {
-        return { frame: ticks, notification: Notification.createComplete(), get value() { return this.notification; } };
+        return { frame: ticks, notification: Notification.createComplete() };
     },
     subscribe: function(start: number, end?: number) {
         return new SubscriptionLog(start, end);

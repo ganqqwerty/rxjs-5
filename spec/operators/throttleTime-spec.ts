@@ -13,20 +13,20 @@ declare const rxTestScheduler: Rx.TestScheduler;
 const Observable = Rx.Observable;
 
 /** @test {throttleTime} */
-describe('Observable.prototype.throttleTime', () => {
+describe('Observable.prototype.throttle', () => {
   asDiagram('throttleTime(50)')('should immediately emit the first value in each time window', () => {
     const e1 =   hot('-a-x-y----b---x-cx---|');
     const subs =     '^                    !';
     const expected = '-a--------b-----c----|';
 
-    const result = e1.throttleTime(50, rxTestScheduler);
+    const result = e1.throttle(50, rxTestScheduler);
 
     expectObservable(result).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
   it('should throttle events by 50 time units', (done: MochaDone) => {
-    Observable.of(1, 2, 3).throttleTime(50)
+    Observable.of(1, 2, 3).throttle(50)
       .subscribe((x: number) => {
         expect(x).to.equal(1);
       }, null, done);
@@ -38,7 +38,7 @@ describe('Observable.prototype.throttleTime', () => {
       Observable.timer(0, 10, rxTestScheduler).take(3).map((x: number) => '1-' + x),
       Observable.timer(80, 10, rxTestScheduler).take(5).map((x: number) => '2-' + x)
       )
-      .throttleTime(50, rxTestScheduler)
+      .throttle(50, rxTestScheduler)
       .subscribe((x: string) => {
         expect(x).to.equal(expected.shift());
       });
@@ -51,7 +51,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^                    !';
     const expected = '-a--------b-----c----|';
 
-    expectObservable(e1.throttleTime(50, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(50, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -60,7 +60,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^                        !';
     const expected = 'a-----a-----a-----a-----a|';
 
-    expectObservable(e1.throttleTime(50, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(50, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -69,7 +69,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^    !';
     const expected = '-----|';
 
-    expectObservable(e1.throttleTime(50, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(50, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -78,7 +78,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^    !';
     const expected = '-----#';
 
-    expectObservable(e1.throttleTime(10, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(10, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -87,7 +87,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '(^!)';
     const expected = '|';
 
-    expectObservable(e1.throttleTime(30, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(30, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -96,7 +96,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^';
     const expected = '-';
 
-    expectObservable(e1.throttleTime(30, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(30, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -105,7 +105,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '(^!)';
     const expected = '#';
 
-    expectObservable(e1.throttleTime(30, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(30, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -115,7 +115,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^                              !';
     const expected = '-a-------------d----------------';
 
-    expectObservable(e1.throttleTime(50, rxTestScheduler), unsub).toBe(expected);
+    expectObservable(e1.throttle(50, rxTestScheduler), unsub).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -127,7 +127,7 @@ describe('Observable.prototype.throttleTime', () => {
 
     const result = e1
       .mergeMap((x: string) => Observable.of(x))
-      .throttleTime(50, rxTestScheduler)
+      .throttle(50, rxTestScheduler)
       .mergeMap((x: string) => Observable.of(x));
 
     expectObservable(result, unsub).toBe(expected);
@@ -139,7 +139,7 @@ describe('Observable.prototype.throttleTime', () => {
     const subs =     '^                              !';
     const expected = '-a-------------d---------------#';
 
-    expectObservable(e1.throttleTime(50, rxTestScheduler)).toBe(expected);
+    expectObservable(e1.throttle(50, rxTestScheduler)).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(subs);
   });
 
@@ -150,7 +150,7 @@ describe('Observable.prototype.throttleTime', () => {
       const t =  time( '----|                 ');
       const expected = '-a---y----b---x-c---x-|';
 
-      const result = e1.throttleTime(t, rxTestScheduler, { leading: true, trailing: true });
+      const result = e1.throttle(t, rxTestScheduler, { leading: true, trailing: true });
 
       expectObservable(result).toBe(expected);
       expectSubscriptions(e1.subscriptions).toBe(e1subs);
@@ -164,7 +164,7 @@ describe('Observable.prototype.throttleTime', () => {
       const t =  time( '----|                 ');
       const expected = '-----y--------x-----x-|';
 
-      const result = e1.throttleTime(t, rxTestScheduler, { leading: false, trailing: true });
+      const result = e1.throttle(t, rxTestScheduler, { leading: false, trailing: true });
 
       expectObservable(result).toBe(expected);
       expectSubscriptions(e1.subscriptions).toBe(e1subs);
