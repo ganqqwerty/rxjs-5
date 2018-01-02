@@ -42,14 +42,6 @@ declare module '../../Observable' {
   }
 }
 
-import { _finally } from '../../operator/finally';
-Observable.prototype.ensure = _finally;
-declare module '../../Observable' {
-  interface Observable<T> {
-    ensure: typeof _finally;
-  }
-}
-
 import { exhaustMap } from '../../operator/exhaustMap';
 Observable.prototype.flatMapFirst = exhaustMap;
 declare module '../../Observable' {
@@ -59,12 +51,10 @@ declare module '../../Observable' {
 }
 
 import { switchMap } from '../../operator/switchMap';
-Observable.prototype.selectSwitch = switchMap;
 Observable.prototype.flatMapLatest = switchMap;
 declare module '../../Observable' {
   interface Observable<T> {
     flatMapLatest: <R>(this: Observable<T>, project: (value: T, index: number) => ObservableInput<R>) => Observable<R>;
-    selectSwitch: typeof switchMap;
   }
 }
 
@@ -77,91 +67,11 @@ declare module '../../Observable' {
   }
 }
 
-Observable.prototype.includes = function<T, R>(this: Observable<T>, value: T, comparer?: (a: T, b: T) => boolean): Observable<boolean> {
-  if (typeof comparer === 'function') {
-    return this.first(x => comparer(value, x), () => true, false);
-  } else {
-    return this.first(x => x === value, () => true, false);
-  }
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    includes: (this: Observable<T>, value: T, comparer?: (a: T, b: T) => boolean) => Observable<boolean>;
-  }
-}
-
-Observable.prototype.indexOf = function<T>(this: Observable<T>, element: T, fromIndex?: number): Observable<number> {
-  const skip = Math.max(typeof fromIndex === 'number' ? fromIndex - 1 : 0, 0);
-  return this.map<[boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).first();
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    indexOf: (this: Observable<T>, element: T, fromIndex?: number) => Observable<number>;
-  }
-}
-
-Observable.prototype.lastIndexOf = function<T>(this: Observable<T>, element: T, fromIndex?: number): Observable<number> {
-  const skip = Math.max(typeof fromIndex === 'number' ? fromIndex - 1 : 0, 0);
-  return this.map<[boolean, number]>((x, i) => [x === element, i]).skip(skip).filter(([x]) => x).map(v => v[1]).last();
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    lastIndexOf: (this: Observable<T>, element: T, fromIndex?: number) => Observable<number>;
-  }
-}
-
 import { pausableBuffered } from '../../operator/pausableBuffered';
 Observable.prototype.pausableBuffered_deprecated = pausableBuffered;
 declare module '../../Observable' {
   interface Observable<T> {
     pausableBuffered_deprecated: typeof pausableBuffered;
-  }
-}
-
-import { map } from '../../operator/map';
-Observable.prototype.select = map;
-declare module '../../Observable' {
-  interface Observable<T> {
-    select: typeof map;
-  }
-}
-
-import { mergeMap } from '../../operator/mergeMap';
-Observable.prototype.selectMany = mergeMap;
-declare module '../../Observable' {
-  interface Observable<T> {
-    selectMany: typeof mergeMap;
-  }
-}
-
-Observable.prototype.slice = function<T>(this: Observable<T>, start: number, end: number) {
-  return this.skip(start).take(end - start);
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    slice: (this: Observable<T>, start: number, end: number) => Observable<T>;
-  }
-}
-
-Observable.prototype.some = function<T>(this: Observable<T>, predicate: (v: T) => boolean) {
-  return this.first(predicate, () => true, false);
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    some: (this: Observable<T>, predicate: (v: T) => boolean) => Observable<boolean>;
-  }
-}
-
-Observable.prototype.sum = function<T>(this: Observable<T>, keySelector?: (v: T) => number) {
-  if (keySelector) {
-    return this.map(keySelector).reduce((s, v) => s + v, 0);
-  } else {
-    return this.reduce((s, v) => s + (v as any as number), 0);
-  }
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    sum: (this: Observable<T>, keySelector?: (v: T) => number) => Observable<number>;
   }
 }
 
@@ -178,36 +88,6 @@ Observable.prototype.switchLatest = _switch;
 declare module '../../Observable' {
   interface Observable<T> {
     switchLatest: typeof _switch;
-  }
-}
-
-Observable.prototype.takeLastBuffer = function<T>(this: Observable<T>, count: number) {
-  return this.takeLast(count).toArray();
-};
-declare module '../../Observable' {
-  interface Observable<T> {
-    takeLastBuffer: (this: Observable<T>, count: number) => Observable<T[]>;
-  }
-}
-
-Observable.prototype.tap = _do;
-Observable.prototype.tapOnNext = _do;
-Observable.prototype.tapOnError = Observable.prototype.doOnError;
-Observable.prototype.tapOnCompleted = Observable.prototype.doOnCompleted;
-declare module '../../Observable' {
-  interface Observable<T> {
-    tap: typeof _do;
-    tapOnNext: typeof _do;
-    tapOnError: (this: Observable<T>, error: (err: any) => void) => Observable<T>;
-    tapOnCompleted: (this: Observable<T>, complete: () => void) => Observable<T>;
-  }
-}
-
-import { filter } from '../../operator/filter';
-Observable.prototype.where = filter;
-declare module '../../Observable' {
-  interface Observable<T> {
-    where: typeof filter;
   }
 }
 

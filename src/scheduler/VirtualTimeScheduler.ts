@@ -26,6 +26,7 @@ export class VirtualTimeScheduler extends AsyncScheduler {
     const {actions, maxFrames} = this;
     let error: any, action: AsyncAction<any>;
 
+    // v4-backwards-compatibility: only advance to `this.limit`
     while (actions[0] && (actions[0].delay <= this.limit) && (action = actions.shift()) && (this.frame = action.delay) <= maxFrames) {
       if (error = action.execute(action.state, action.delay)) {
         break;

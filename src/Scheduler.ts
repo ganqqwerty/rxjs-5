@@ -1,12 +1,6 @@
 import { Action } from './scheduler/Action';
 import { Subscription } from './Subscription';
 
-export type Rxjs4Action<TState> = (scheduler: IScheduler, state: TState) => IRxJs4Disposable;
-
-export interface IRxJs4Disposable {
-  dispose(): void;
-}
-
 export interface IScheduler {
   now(): number;
   schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
@@ -35,7 +29,6 @@ export class Scheduler implements IScheduler {
   constructor(private SchedulerAction: typeof Action,
               now: () => number = Scheduler.now) {
     this.now = now;
-    false && this.scheduleFuture; // tslint:disable-line
   }
 
   /**
@@ -47,9 +40,6 @@ export class Scheduler implements IScheduler {
    * (e.g. milliseconds).
    */
   public now: () => number;
-
-  // v4-backwards-compatibility
-  public schedule<TState>(state: TState, action: Rxjs4Action<TState>, delay?: number): IRxJs4Disposable;
 
   /**
    * Schedules a function, `work`, for execution. May happen at some point in
@@ -68,35 +58,7 @@ export class Scheduler implements IScheduler {
    * @return {Subscription} A subscription in order to be able to unsubscribe
    * the scheduled work.
    */
-  public schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription;
-  public schedule<T>(workOrState?: any, delayOrAction = 0 as number | Rxjs4Action<T>, stateOrDelay?: T | number): Subscription {
-    if (typeof delayOrAction === 'number') {
-      const work = workOrState as (this: Action<T>, state?: T) => void;
-      const delay = delayOrAction;
-      const state = stateOrDelay as T;
-      return new this.SchedulerAction<T>(this, work).schedule(state, delay);
-    } else {
-      // v4-backwards-compatibility
-      const scheduler = this;
-      const action = delayOrAction;
-      const delay = stateOrDelay as number;
-      const state = workOrState;
-      const work = function(this: Action<T>, state?: T) {
-        action(scheduler, state);
-      };
-      return new this.SchedulerAction<T>(this, work).schedule(state, delay);
-    }
-  }
-
-  // v4-backwards-compatibility
-  private scheduleFuture<TState>(
-    state: TState,
-    dueTime: number | Date,
-    action: (scheduler: IScheduler, state: TState) => Subscription
-  ): Subscription {
-    const delay: number = Math.max(0, typeof dueTime === 'number' ? dueTime : dueTime.getTime() - this.now());
-    return this.schedule((state) => {
-      action(this, state);
-    }, delay, state);
+  public schedule<T>(work: (this: Action<T>, state?: T) => void, delay?: number, state?: T): Subscription {
+    return new this.SchedulerAction<T>(this, work).schedule(state, delay);
   }
 }

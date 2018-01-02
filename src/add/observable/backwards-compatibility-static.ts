@@ -12,7 +12,6 @@ declare module '../../Observable' {
 
 import { of as staticOf } from '../../observable/of';
 Observable.just = staticOf;
-(Observable as any).return = staticOf;
 declare module '../../Observable' {
   namespace Observable {
     export let just: typeof staticOf; //formOf an iceberg!
