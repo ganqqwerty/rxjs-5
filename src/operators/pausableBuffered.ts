@@ -10,6 +10,8 @@ import { OperatorFunction } from '../interfaces';
 
 class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
   private srcCompleted = false;
+  private srcErrored = false;
+  private srcError: any = undefined;
   private pauserCompleted = false;
   private flowing = false;
   private buffer: T[] = [];
@@ -58,14 +60,20 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
     this.flowing = flowing;
     if (flowing) {
       this.drainQueue();
+      if (this.srcCompleted) {
+        super._complete();
+      }
+      if (this.srcErrored) {
+        super._error(this.srcError);
+      }
     }
   }
 
   protected _complete(): void {
     this.srcCompleted = true;
-    if (this.pauserCompleted) {
+    if (this.buffer.length === 0 || this.pauserCompleted) {
       this.drainQueue();
-      this.destination.complete();
+      super._complete();
     }
   }
 
@@ -76,15 +84,24 @@ class PausableBufferedSubscriber<T> extends OuterSubscriber<T, boolean> {
       this.drainQueue();
       this.destination.complete();
     }
+    if (this.srcErrored) {
+      this.drainQueue();
+      super._error(this.srcError);
+    }
   }
 
   protected _error(err: any): void {
-    this.drainQueue();
-    this.destination.error(err);
+    this.srcErrored = true;
+    this.srcError = err;
+    if (this.buffer.length === 0 || this.pauserCompleted) {
+      this.drainQueue();
+      super._error(err);
+    }
   }
 
   notifyError(err: any): void {
-    this._error(err);
+    this.drainQueue();
+    super._error(err);
   }
 }
 
