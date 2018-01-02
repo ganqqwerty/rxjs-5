@@ -220,9 +220,6 @@ export class Observable<T> implements Subscribable<T> {
     }
   }
 
-  // v4-backwards-compatibility
-  forEach(v: any): any // TODO - return disposable
-
   /**
    * @method forEach
    * @param {Function} next a handler for each value emitted by the observable
@@ -347,20 +344,17 @@ export class Observable<T> implements Subscribable<T> {
   }
 
   // v4-backwards-compatibility
-  subscribeOnNext(next: (value: T) => void, thisArg?: any) {
-    const cb = thisArg === void 0 ? next : next.bind(thisArg);
-    return this.subscribe(cb);
+  subscribeOnNext(next: (value: T) => void) {
+    return this.subscribe(next);
   }
 
   // v4-backwards-compatibility
-  subscribeOnError(error: (error: any) => void, thisArg?: any) {
-    const cb = thisArg === void 0 ? error : error.bind(thisArg);
-    return this.subscribe(undefined, cb);
+  subscribeOnError(error: (error: any) => void) {
+    return this.subscribe(void 0, error);
   }
 
   // v4-backwards-compatibility
-  subscribeOnCompleted(complete: () => void, thisArg?: any) {
-    const cb = thisArg === void 0 ? complete : complete.bind(thisArg);
-    return this.subscribe(undefined, undefined, cb);
+  subscribeOnCompleted(complete: () => void) {
+    return this.subscribe(void 0, void 0, complete);
   }
 }

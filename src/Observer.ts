@@ -84,54 +84,6 @@ enum CheckedObserverState {
   IDLE, BUSY, DONE
 }
 
-class CheckedObserver<T> implements Observer<any> {
-  private state = CheckedObserverState.IDLE;
-
-  constructor(private obs: Observer<T>) {}
-
-  next(value: T): void {
-    this.checkAccess();
-    try {
-      this.obs.next(value);
-    } finally {
-      this.state = CheckedObserverState.IDLE;
-    }
-  }
-
-  error(err: any): void {
-    this.checkAccess();
-    try {
-      this.obs.error(err);
-    } finally {
-      this.state = CheckedObserverState.DONE;
-    }
-  }
-
-  complete(): void {
-    this.checkAccess();
-    try {
-      this.obs.complete();
-    } finally {
-      this.state = CheckedObserverState.DONE;
-    }
-  }
-
-  private checkAccess() {
-    if (this.state === CheckedObserverState.BUSY) { throw new Error('Re-entrancy detected'); }
-    if (this.state === CheckedObserverState.DONE) { throw new Error('Observer completed'); }
-    if (this.state === CheckedObserverState.IDLE) { this.state = CheckedObserverState.BUSY; }
-  }
-
-  onNext?: this['next'];
-  onError?: this['error'];
-  onCompleted?: this['complete'];
-}
-
-// v4-backwards-compatibility
-CheckedObserver.prototype.onNext = CheckedObserver.prototype.next;
-CheckedObserver.prototype.onError = CheckedObserver.prototype.error;
-CheckedObserver.prototype.onCompleted = CheckedObserver.prototype.complete;
-
 // v4-backwards-compatibility
 class ObserverImpl<T> implements Observer<T> {
 
@@ -162,11 +114,6 @@ class ObserverImpl<T> implements Observer<T> {
       this.closed = true;
       this.c();
     }
-  }
-
-  // v4-backwards-compatibility
-  checked(): Observer<T> {
-    return new CheckedObserver(this);
   }
 
   // v4-backwards-compatibility
