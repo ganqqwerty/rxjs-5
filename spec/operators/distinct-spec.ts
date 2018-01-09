@@ -8,7 +8,7 @@ declare const expectSubscriptions: typeof marbleTestingSignature.expectSubscript
 const Observable = Rx.Observable;
 
 /** @test {distinct} */
-describe('Observable.prototype.distinct', () => {
+describe.skip('Observable.prototype.distinct', () => {
   it('should distinguish between values', () => {
     const e1 =   hot('--a--a--a--b--b--a--|');
     const e1subs =   '^                   !';

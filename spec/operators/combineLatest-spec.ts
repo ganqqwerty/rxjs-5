@@ -473,7 +473,7 @@ describe('Observable.prototype.combineLatest', () => {
     const e2 =   hot('--1--2-|');
     const expected = '-------(c|)';
 
-    const result = e1.combineLatest(e2).distinct().count();
+    const result = e1.combineLatest(e2).count();
 
     expectObservable(result).toBe(expected, { c: 3 });
   });

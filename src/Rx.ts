@@ -60,7 +60,8 @@ import './add/operator/debounceTime';
 import './add/operator/defaultIfEmpty';
 import './add/operator/delay';
 import './add/operator/delayWhen';
-import './add/operator/distinct';
+// v4-backwards-compatibility : no dependency on `Set`
+// import './add/operator/distinct';
 import './add/operator/distinctUntilChanged';
 import './add/operator/distinctUntilKeyChanged';
 import './add/operator/do';
@@ -73,7 +74,8 @@ import './add/operator/finally';
 import './add/operator/find';
 import './add/operator/findIndex';
 import './add/operator/first';
-import './add/operator/groupBy';
+// v4-backwards-compatibility : no dependency on `Map`
+// import './add/operator/groupBy';
 import './add/operator/ignoreElements';
 import './add/operator/isEmpty';
 import './add/operator/audit';

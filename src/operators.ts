@@ -19,7 +19,8 @@ export { defaultIfEmpty } from './operators/defaultIfEmpty';
 export { delay } from './operators/delay';
 export { delayWhen } from './operators/delayWhen';
 export { dematerialize } from './operators/dematerialize';
-export { distinct } from './operators/distinct';
+// v4-backwards-compatibility : no dependency on `Set`
+// export { distinct } from './operators/distinct';
 export { distinctUntilChanged } from './operators/distinctUntilChanged';
 export { distinctUntilKeyChanged } from './operators/distinctUntilKeyChanged';
 export { elementAt } from './operators/elementAt';
@@ -32,7 +33,8 @@ export { finalize } from './operators/finalize';
 export { find } from './operators/find';
 export { findIndex } from './operators/findIndex';
 export { first } from './operators/first';
-export { groupBy } from './operators/groupBy';
+// v4-backwards-compatibility : no dependency on `Map`
+// export { groupBy } from './operators/groupBy';
 export { ignoreElements } from './operators/ignoreElements';
 export { isEmpty } from './operators/isEmpty';
 export { last } from './operators/last';

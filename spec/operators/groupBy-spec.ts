@@ -14,7 +14,7 @@ const Observable = Rx.Observable;
 const ReplaySubject = Rx.ReplaySubject;
 
 /** @test {groupBy} */
-describe('Observable.prototype.groupBy', () => {
+describe.skip('Observable.prototype.groupBy', () => {
   asDiagram('groupBy(i => i % 2)')('should group numbers by odd/even', () => {
     const e1 =   hot('--1---2---3---4---5---|');
     const expected = '--x---y---------------|';
