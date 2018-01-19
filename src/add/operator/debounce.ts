@@ -1,12 +1,13 @@
 
-import { Observable } from '../../Observable';
-import { debounce } from '../../operator/debounce';
-import { debounceTime } from '../../operator/debounceTime';
+import { Observable } from '../../internal/Observable';
+import { debounce } from '../../internal/patching/operator/debounce';
+import { debounceTime } from '../../internal/patching/operator/debounceTime';
 
+// v4-backwards-compatibility
 Observable.prototype.debounce = debounceTime;
 Observable.prototype.debounceV5 = debounce;
 
-declare module '../../Observable' {
+declare module '../../internal/Observable' {
   interface Observable<T> {
     // v4-backwards-compatibility
     debounce: typeof debounceTime;

@@ -1,6 +1,6 @@
 // v4-backwards-compatibility
 
-import {ISubscription} from '../Subscription';
+import {ISubscription} from '../internal/Subscription';
 
 export class DisposableImpl implements ISubscription {
 
