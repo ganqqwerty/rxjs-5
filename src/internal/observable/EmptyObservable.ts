@@ -14,6 +14,8 @@ export interface DispatchArg<T> {
  */
 export class EmptyObservable<T> extends Observable<T> {
 
+  static EMPTY = new EmptyObservable<any>();
+
   /**
    * Creates an Observable that emits no items to the Observer and immediately
    * emits a complete notification.
@@ -58,6 +60,9 @@ export class EmptyObservable<T> extends Observable<T> {
    * @owner Observable
    */
   static create<T>(scheduler?: IScheduler): Observable<T> {
+    if (scheduler === void 0) {
+      return EmptyObservable.EMPTY;
+    }
     return new EmptyObservable<T>(scheduler);
   }
 
