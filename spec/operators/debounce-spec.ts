@@ -53,7 +53,7 @@ describe('Observable.prototype.debounceV5', () => {
     const e1subs =   '^             !';
     const expected = '--a--bc--d----|';
 
-    expectObservable(e1.debounce(() => Rx.Observable.of(0))).toBe(expected);
+    expectObservable(e1.debounceV5(() => Rx.Observable.of(0))).toBe(expected);
     expectSubscriptions(e1.subscriptions).toBe(e1subs);
   });
 
