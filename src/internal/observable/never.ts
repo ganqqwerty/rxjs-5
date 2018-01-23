@@ -35,6 +35,6 @@ export const NEVER = new Observable<never>(noop);
  * @name never
  * @owner Observable
  */
-export function never(): Observable<never> {
+export function never<T = never>(): Observable<T> {
   return NEVER;
 }

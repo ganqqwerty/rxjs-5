@@ -12,9 +12,9 @@ export interface DispatchArg<T> {
  * @extends {Ignored}
  * @hide true
  */
-export class EmptyObservable<T> extends Observable<T> {
+export class EmptyObservable<T = never> extends Observable<T> {
 
-  static EMPTY = new EmptyObservable<any>();
+  static EMPTY = new EmptyObservable();
 
   /**
    * Creates an Observable that emits no items to the Observer and immediately
@@ -59,7 +59,7 @@ export class EmptyObservable<T> extends Observable<T> {
    * @name empty
    * @owner Observable
    */
-  static create<T>(scheduler?: IScheduler): Observable<T> {
+  static create<T = never>(scheduler?: IScheduler): Observable<T> {
     if (scheduler === void 0) {
       return EmptyObservable.EMPTY;
     }
