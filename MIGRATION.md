@@ -50,8 +50,8 @@ enabling "composite" subscription behavior.
 
 ## Operators Renamed or Removed
 
-|RxJS 4|RxJS 5|
-|---|---|
+|RxJS 4|RxJS 5|RxJS 6
+|---|---|--|
 |`amb`|`race`|
 |`and`|No longer implemented|
 |`asObservable`|Exists on `Subject` only|
@@ -64,7 +64,7 @@ enabling "composite" subscription behavior.
 |`concatMapObserver`|No longer implemented|
 |`controlled`|No longer implemented|
 |`delaySubscription`|No longer implemented|
-|`do`|`do`|
+|`do`|`do`|`tap`|
 |`doAction`|`do`|
 |`doOnCompleted`|`do(null, null, fn)`|
 |`doOnError`|`do(null, fn)`|
@@ -122,7 +122,7 @@ enabling "composite" subscription behavior.
 |`tapOnCompleted(fn)`|`do(null, null, fn)`|
 |`tapOnError(fn)`|`do(null, fn)`|
 |`tapOnNext(fn)`|`do(fn)`|
-|`tap`|`do`|
+|`tap`|`do`|`tap`|
 |`timestamp`|`map(v => ({ value: v, timestamp: Date.now() }))`|
 |`toMap(keySelector)`|`reduce((map, v, i) => map.set(keySelector(v, i), v), new Map())`|
 |`toMap(keySelector, elmentSelector)`|`reduce((map, v, i) => map.set(keySelector(v, i), elementSelector(v)), new Map())`|
